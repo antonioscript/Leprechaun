@@ -18,19 +18,56 @@ public class TelegramController : ControllerBase
     [HttpPost("webhook")]
     public async Task<IActionResult> Webhook([FromBody] TelegramUpdate update, CancellationToken cancellationToken)
     {
-        // Se não tiver mensagem ou texto, não faz nada
         if (update.Message is null || string.IsNullOrWhiteSpace(update.Message.Text))
             return Ok();
 
         var chatId = update.Message.Chat.Id;
         var userText = update.Message.Text.Trim();
 
-        // Regra mais simples possível: ecoar a mensagem
-        var replyText = $"Você disse: {userText}";
+        string replyText;
+
+        // 1) Comando /start
+        if (userText.StartsWith("/start", StringComparison.OrdinalIgnoreCase))
+        {
+            replyText =
+                "🍀 Olá! Eu sou o Leprechaun Bot.\n" +
+                "Use /help para ver o que eu sei fazer.";
+        }
+        // 2) Comando /ping
+        else if (userText.StartsWith("/ping", StringComparison.OrdinalIgnoreCase))
+        {
+            replyText = "Pong! 🏓";
+        }
+        // 3) Comando /help
+        else if (userText.StartsWith("/help", StringComparison.OrdinalIgnoreCase))
+        {
+            replyText =
+                "📚 Comandos disponíveis:\n" +
+                "/start - Mensagem de boas-vindas\n" +
+                "/ping - Testa se o bot está online\n" +
+                "/eco <texto> - Eu repito o texto que você enviar\n";
+        }
+        // 4) Comando /eco <texto>
+        else if (userText.StartsWith("/eco", StringComparison.OrdinalIgnoreCase))
+        {
+            var args = userText.Substring(4).Trim(); // tudo depois de "/eco"
+            if (string.IsNullOrWhiteSpace(args))
+            {
+                replyText = "Me diga o que você quer que eu repita. Ex: /eco bom dia!";
+            }
+            else
+            {
+                replyText = $"🔁 {args}";
+            }
+        }
+        // 5) Qualquer outra coisa
+        else
+        {
+            replyText = "Não entendi 🤔. Use /help para ver os comandos disponíveis.";
+        }
 
         await _telegramSender.SendMessageAsync(chatId, replyText, cancellationToken);
 
-        // Pro Telegram, basta responder 200 OK
         return Ok();
     }
 }

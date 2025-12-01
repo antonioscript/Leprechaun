@@ -1,4 +1,5 @@
 using Leprechaun.API.Services;
+using Amazon.Lambda.AspNetCoreServer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
 builder.Services.AddHttpClient<ITelegramSender, TelegramSender>();
 
 var app = builder.Build();
