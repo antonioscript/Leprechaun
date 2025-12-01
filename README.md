@@ -22,7 +22,7 @@ It sends scheduled messages, collects values from users, stores structured data,
 
 Perfect for couples, families, or small groups who need a simple way to track recurring payments or income updates.
 
----
+https://c2w4peqtjzmmvdbfrxcqra3zf40qnmnq.lambda-url.us-east-1.on.aws/swagger/index.html
 
 ## 🖼️ Logo
 
