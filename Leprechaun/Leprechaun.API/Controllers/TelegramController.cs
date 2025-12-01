@@ -1,5 +1,6 @@
 using Leprechaun.API.Models;
 using Leprechaun.API.Services;
+using Leprechaun.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Leprechaun.API.Controllers;
@@ -9,10 +10,15 @@ namespace Leprechaun.API.Controllers;
 public class TelegramController : ControllerBase
 {
     private readonly ITelegramSender _telegramSender;
+    private readonly IPersonService _personService;
 
-    public TelegramController(ITelegramSender telegramSender)
+
+    public TelegramController(
+        ITelegramSender telegramSender,
+        IPersonService personService)
     {
         _telegramSender = telegramSender;
+        _personService = personService;
     }
 
     [HttpPost("webhook")]
@@ -58,6 +64,23 @@ public class TelegramController : ControllerBase
             else
             {
                 replyText = $"🔁 {args}";
+            }
+        }
+        // 5) Comando /person - lista os titulares do banco
+        else if (userText.StartsWith("/person", StringComparison.OrdinalIgnoreCase))
+        {
+            var persons = await _personService.GetAllAsync(cancellationToken);
+
+            if (!persons.Any())
+            {
+                replyText = "Nenhum titular encontrado no banco.";
+            }
+            else
+            {
+                replyText = "👥 Titulares:\n";
+
+                foreach (var p in persons)
+                    replyText += $"• {p.Name}\n";
             }
         }
         // 5) Qualquer outra coisa

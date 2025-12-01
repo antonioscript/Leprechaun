@@ -1,5 +1,11 @@
 using Leprechaun.API.Services;
 using Amazon.Lambda.AspNetCoreServer;
+using Leprecaun.Infra.Context;
+using Leprecaun.Infra.Repositories;
+using Leprechaun.Application.Services;
+using Leprechaun.Domain.Interfaces;
+using Leprechaun.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,12 +22,22 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "Leprechaun.API",
-        Version = "3",
+        Version = "4",
     });
+});
+
+
+var connectionString = builder.Configuration.GetConnectionString("LeprechaunDb");
+
+builder.Services.AddDbContext<LeprechaunDbContext>(options =>
+{
+    options.UseNpgsql(connectionString);
 });
 
 builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
 builder.Services.AddHttpClient<ITelegramSender, TelegramSender>();
+builder.Services.AddScoped<IPersonRepository, PersonRepository>();
+builder.Services.AddScoped<IPersonService, PersonService>();
 
 var app = builder.Build();
 
