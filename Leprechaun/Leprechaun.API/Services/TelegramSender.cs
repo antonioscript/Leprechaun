@@ -17,6 +17,8 @@ public class TelegramSender : ITelegramSender
 
     public async Task SendMessageAsync(long chatId, string text, CancellationToken cancellationToken = default)
     {
+        Console.WriteLine($"[TelegramSender] chatId = {chatId}, text = '{text}'");
+
         var url = $"https://api.telegram.org/bot{_botToken}/sendMessage";
 
         var payload = new
@@ -26,6 +28,9 @@ public class TelegramSender : ITelegramSender
         };
 
         var response = await _httpClient.PostAsJsonAsync(url, payload, cancellationToken);
+
+        var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+        Console.WriteLine($"[TelegramSender] StatusCode = {(int)response.StatusCode}, Body = {responseBody}");
 
         response.EnsureSuccessStatusCode();
     }
