@@ -51,6 +51,7 @@ public class TelegramController : ControllerBase
                 "📚 Comandos disponíveis:\n" +
                 "/start - Mensagem de boas-vindas\n" +
                 "/ping - Testa se o bot está online\n" +
+                "/person - Lista os titulares da conta\n" +
                 "/eco <texto> - Eu repito o texto que você enviar\n";
         }
         // 4) Comando /eco <texto>
