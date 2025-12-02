@@ -28,7 +28,8 @@ public class TelegramSender : ITelegramSender
         var payload = new
         {
             chat_id = chatId,
-            text = text
+            text = text,
+            parse_mode = "Markdown",
         };
 
         var response = await _httpClient.PostAsJsonAsync(url, payload, cancellationToken);
