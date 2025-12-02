@@ -2,6 +2,7 @@ using Amazon.Lambda.AspNetCoreServer;
 using Leprecaun.Infra.Context;
 using Leprecaun.Infra.Repositories;
 using Leprechaun.Application.Services;
+using Leprechaun.Application.Telegram.Flows;
 using Leprechaun.Domain.Interfaces;
 using Leprechaun.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +22,7 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "Leprechaun.API",
-        Version = "6",
+        Version = "7",
     });
 });
 
@@ -47,13 +48,15 @@ builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 builder.Services.AddScoped<IChatStateRepository, ChatStateRepository>();
 
 //Servcies
-
 builder.Services.AddScoped<IChatStateService, ChatStateService>();
 builder.Services.AddScoped<IInstitutionService, InstitutionService>();
 builder.Services.AddScoped<ICostCenterService, CostCenterService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IFinanceTransactionService, FinanceTransactionService>();
 builder.Services.AddScoped<IPersonService, PersonService>();
+
+//Flows
+builder.Services.AddScoped<SalaryIncomeFlowService>();
 
 var app = builder.Build();
 

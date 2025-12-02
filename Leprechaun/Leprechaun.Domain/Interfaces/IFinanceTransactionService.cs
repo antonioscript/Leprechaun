@@ -65,4 +65,7 @@ public interface IFinanceTransactionService
     // Helpers de saldo (vamos usar no futuro e no /transacao)
     Task<decimal> GetSalaryAccumulatedAsync(int personId, CancellationToken cancellationToken = default);
     Task<decimal> GetCostCenterBalanceAsync(int costCenterId, CancellationToken cancellationToken = default);
+    
+    Task<decimal> GetTotalSalaryAccumulatedAsync(CancellationToken cancellationToken = default);
+    
 }

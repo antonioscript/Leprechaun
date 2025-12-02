@@ -57,6 +57,24 @@ public class FinanceTransactionService : IFinanceTransactionService
         return entries - exits;
     }
 
+    public async Task<decimal> GetTotalSalaryAccumulatedAsync(CancellationToken cancellationToken = default)
+    {
+        var all = await _transactionRepository.GetAllAsync(cancellationToken);
+
+        // Entradas de salário (sem cost center → liquidez)
+        var totalIncome = all
+            .Where(t => t.TransactionType == "Income" && t.TargetCostCenterId == null)
+            .Sum(t => t.Amount);
+
+        // Saídas feitas direto da liquidez
+        var totalOutflow = all
+            .Where(t => (t.TransactionType == "Expense" || t.TransactionType == "Transfer")
+                        && t.SourceCostCenterId == null)
+            .Sum(t => t.Amount);
+
+        return totalIncome - totalOutflow;
+    }
+
     // ---------- Operações de negócio ----------
 
     public async Task<FinanceTransaction> RegisterIncomeAsync(

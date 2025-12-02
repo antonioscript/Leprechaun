@@ -10,4 +10,6 @@ public interface IFinanceTransactionRepository
     void Update(FinanceTransaction transaction);
     void Remove(FinanceTransaction transaction);
     Task SaveChangesAsync(CancellationToken cancellationToken = default);
+    
+    
 }
