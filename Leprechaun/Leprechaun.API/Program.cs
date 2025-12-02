@@ -35,7 +35,21 @@ builder.Services.AddDbContext<LeprechaunDbContext>(options =>
 
 builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
 builder.Services.AddHttpClient<ITelegramSender, TelegramSender>();
+
+
+//Repositories
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
+builder.Services.AddScoped<IInstitutionRepository, InstitutionRepository>();
+builder.Services.AddScoped<ICostCenterRepository, CostCenterRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IFinanceTransactionRepository, FinanceTransactionRepository>();
+builder.Services.AddScoped<IPersonRepository, PersonRepository>();
+
+//Servcies
+builder.Services.AddScoped<IInstitutionService, InstitutionService>();
+builder.Services.AddScoped<ICostCenterService, CostCenterService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IFinanceTransactionService, FinanceTransactionService>();
 builder.Services.AddScoped<IPersonService, PersonService>();
 
 var app = builder.Build();

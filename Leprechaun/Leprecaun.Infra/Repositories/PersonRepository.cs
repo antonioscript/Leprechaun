@@ -1,6 +1,6 @@
-using Leprecaun.Infra.Context;
 using Leprechaun.Domain.Entities;
 using Leprechaun.Domain.Repositories;
+using Leprecaun.Infra.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace Leprecaun.Infra.Repositories;
@@ -23,6 +23,16 @@ public class PersonRepository : IPersonRepository
     public async Task AddAsync(Person person, CancellationToken cancellationToken = default)
     {
         await _context.Persons.AddAsync(person, cancellationToken);
+    }
+
+    public void Update(Person person)
+    {
+        _context.Persons.Update(person);
+    }
+
+    public void Remove(Person person)
+    {
+        _context.Persons.Remove(person);
     }
 
     public Task SaveChangesAsync(CancellationToken cancellationToken = default)

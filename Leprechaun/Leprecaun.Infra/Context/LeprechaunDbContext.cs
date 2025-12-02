@@ -55,8 +55,8 @@ public class LeprechaunDbContext : DbContext
         entity.Property(i => i.Type).HasColumnName("type");
         entity.Property(i => i.PersonId).HasColumnName("personid");
         entity.Property(i => i.Description).HasColumnName("description");
-        entity.Property(i => i.StartDate).HasColumnName("startdate");
-        entity.Property(i => i.EndDate).HasColumnName("enddate");
+        entity.Property(i => i.StartDate).HasColumnName("startdate").HasColumnType("date");
+        entity.Property(i => i.EndDate).HasColumnName("enddate").HasColumnType("date");
         entity.Property(i => i.IsActive).HasColumnName("isactive");
 
         entity.HasOne(i => i.Person)
