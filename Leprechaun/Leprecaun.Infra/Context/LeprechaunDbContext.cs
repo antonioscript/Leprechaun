@@ -15,6 +15,8 @@ public class LeprechaunDbContext : DbContext
     public DbSet<CostCenter> CostCenters => Set<CostCenter>();
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<FinanceTransaction> FinanceTransactions => Set<FinanceTransaction>();
+    
+    public DbSet<ChatState> ChatStates { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -134,5 +136,21 @@ public class LeprechaunDbContext : DbContext
             .WithMany()
             .HasForeignKey(f => f.CategoryId);
     });
+    
+    modelBuilder.Entity<ChatState>(entity =>
+    {
+        entity.ToTable("chatstate");
+
+        entity.HasKey(c => c.ChatId);
+
+        entity.Property(c => c.ChatId).HasColumnName("chatid");
+        entity.Property(c => c.State).HasColumnName("state");
+        entity.Property(c => c.TempInstitutionId).HasColumnName("tempinstitutionid");
+        entity.Property(c => c.TempAmount).HasColumnName("tempamount");
+        entity.Property(c => c.UpdatedAt).HasColumnName("updatedat");
+    });
+    
     }
+    
+    
 }
