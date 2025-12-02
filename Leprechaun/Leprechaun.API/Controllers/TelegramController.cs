@@ -48,7 +48,7 @@ public class TelegramController : ControllerBase
         // --------------------------------------------------------------------
 
         // PASSO 1 – Usuário começa o fluxo
-        if (userText.Equals("/cadastrar_salario", StringComparison.OrdinalIgnoreCase))
+        if (userText.StartsWith("/cadastrar_salario", StringComparison.OrdinalIgnoreCase))
         {
             // Busca todas as instituições (se quiser, pode filtrar só ativas aqui)
             var institutions = (await _institutionService.GetAllAsync(cancellationToken))
