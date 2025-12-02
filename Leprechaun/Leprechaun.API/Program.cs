@@ -1,4 +1,3 @@
-using Leprechaun.API.Services;
 using Amazon.Lambda.AspNetCoreServer;
 using Leprecaun.Infra.Context;
 using Leprecaun.Infra.Repositories;

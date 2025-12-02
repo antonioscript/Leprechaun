@@ -1,4 +1,8 @@
-namespace Leprechaun.API.Services;
+using System.Net.Http.Json;
+using Leprechaun.Domain.Interfaces;
+using Microsoft.Extensions.Configuration;
+
+namespace Leprechaun.Application.Services;
 
 public class TelegramSender : ITelegramSender
 {

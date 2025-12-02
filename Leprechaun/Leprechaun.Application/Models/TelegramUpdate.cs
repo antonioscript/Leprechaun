@@ -1,4 +1,4 @@
-namespace Leprechaun.API.Models;
+namespace Leprechaun.Application.Models;
 
 public class TelegramUpdate
 {

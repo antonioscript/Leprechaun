@@ -1,5 +1,4 @@
-using Leprechaun.API.Models;
-using Leprechaun.API.Services;
+using Leprechaun.Application.Models;
 using Leprechaun.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 

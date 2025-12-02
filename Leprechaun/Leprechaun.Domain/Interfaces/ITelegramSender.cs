@@ -1,4 +1,4 @@
-namespace Leprechaun.API.Services;
+namespace Leprechaun.Domain.Interfaces;
 
 public interface ITelegramSender
 {
