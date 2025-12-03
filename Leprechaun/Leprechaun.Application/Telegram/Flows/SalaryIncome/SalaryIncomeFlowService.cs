@@ -2,9 +2,9 @@ using System.Globalization;
 using Leprechaun.Domain.Entities;
 using Leprechaun.Domain.Interfaces;
 
-namespace Leprechaun.Application.Telegram.Flows;
+namespace Leprechaun.Application.Telegram.Flows.SalaryIncome;
 
-public class SalaryIncomeFlowService
+public class SalaryIncomeFlowService : IChatFlow
 {
     private readonly IChatStateService _chatStateService;
     private readonly IInstitutionService _institutionService;
@@ -27,12 +27,7 @@ public class SalaryIncomeFlowService
     /// Tenta tratar a mensagem como parte do fluxo de cadastro de salário.
     /// Retorna true se tratou; false se não é responsabilidade deste fluxo.
     /// </summary>
-    public async Task<bool> TryHandleAsync(
-        long chatId,
-        string userText,
-        ChatState state,
-        TelegramCommand command,
-        CancellationToken cancellationToken)
+    public async Task<bool> TryHandleAsync(long chatId, string userText, ChatState state, TelegramCommand command, CancellationToken cancellationToken)
     {
         // 1) Se já estamos no fluxo (estado), continuar
         if (state.State == FlowStates.SalaryAwaitingInstitution ||
@@ -55,10 +50,7 @@ public class SalaryIncomeFlowService
 
     // ----------- Início do fluxo -----------
 
-    private async Task StartFlowAsync(
-        long chatId,
-        ChatState state,
-        CancellationToken cancellationToken)
+    private async Task StartFlowAsync(long chatId, ChatState state, CancellationToken cancellationToken)
     {
         var institutions = (await _institutionService.GetAllAsync(cancellationToken))
             .Where(i => i.IsActive)
@@ -66,13 +58,11 @@ public class SalaryIncomeFlowService
 
         if (!institutions.Any())
         {
-            await _telegramSender.SendMessageAsync(chatId,
-                "Não há instituições cadastradas.",
-                cancellationToken);
+            await _telegramSender.SendMessageAsync(chatId, "Não há instituições cadastradas.", cancellationToken);
             return;
         }
 
-        var reply = BotTexts.ChooseInstitution(institutions);
+        var reply = TextsSalaryIncome.ChooseInstitution(institutions);
 
         state.State = FlowStates.SalaryAwaitingInstitution;
         state.TempInstitutionId = null;
@@ -85,11 +75,7 @@ public class SalaryIncomeFlowService
 
     // ----------- Continuação do fluxo -----------
 
-    private async Task HandleOngoingFlowAsync(
-        long chatId,
-        string userText,
-        ChatState state,
-        CancellationToken cancellationToken)
+    private async Task HandleOngoingFlowAsync(long chatId, string userText, ChatState state, CancellationToken cancellationToken)
     {
         if (state.State == FlowStates.SalaryAwaitingInstitution)
         {
@@ -101,17 +87,11 @@ public class SalaryIncomeFlowService
         }
     }
 
-    private async Task HandleChooseInstitutionAsync(
-        long chatId,
-        string userText,
-        ChatState state,
-        CancellationToken cancellationToken)
+    private async Task HandleChooseInstitutionAsync(long chatId, string userText, ChatState state, CancellationToken cancellationToken)
     {
         if (!int.TryParse(userText, out var index))
         {
-            await _telegramSender.SendMessageAsync(chatId,
-                "Envie um número válido para escolher a instituição.",
-                cancellationToken);
+            await _telegramSender.SendMessageAsync(chatId, "Envie um número válido para escolher a instituição.", cancellationToken);
             return;
         }
 
@@ -121,9 +101,7 @@ public class SalaryIncomeFlowService
 
         if (index < 1 || index > institutions.Count)
         {
-            await _telegramSender.SendMessageAsync(chatId,
-                "Número inválido. Tente novamente.",
-                cancellationToken);
+            await _telegramSender.SendMessageAsync(chatId,"Número inválido. Tente novamente.", cancellationToken);
             return;
         }
 
@@ -135,17 +113,10 @@ public class SalaryIncomeFlowService
 
         await _chatStateService.SaveAsync(state, cancellationToken);
 
-        await _telegramSender.SendMessageAsync(
-            chatId,
-            BotTexts.AskSalaryAmount(chosen.Name),
-            cancellationToken);
+        await _telegramSender.SendMessageAsync(chatId, TextsSalaryIncome.AskSalaryAmount(chosen.Name), cancellationToken);
     }
 
-    private async Task HandleAmountAsync(
-        long chatId,
-        string userText,
-        ChatState state,
-        CancellationToken cancellationToken)
+    private async Task HandleAmountAsync(long chatId, string userText, ChatState state, CancellationToken cancellationToken)
     {
         var normalized = userText.Replace("R$", "", StringComparison.OrdinalIgnoreCase).Trim();
         normalized = normalized.Replace(".", "").Replace(",", ".");
@@ -196,12 +167,8 @@ public class SalaryIncomeFlowService
 
         var total = await _transactionService.GetTotalSalaryAccumulatedAsync(cancellationToken);
 
-        var reply = BotTexts.SalaryReceipt(
-            institution,
-            amount,
-            DateTime.Now,
-            total
-        );
+        var reply = TextsSalaryIncome.SalaryReceipt(institution, amount, DateTime.Now, total);
+
         await _telegramSender.SendMessageAsync(chatId, reply, cancellationToken);
     }
 }

@@ -3,6 +3,7 @@ using Leprecaun.Infra.Context;
 using Leprecaun.Infra.Repositories;
 using Leprechaun.Application.Services;
 using Leprechaun.Application.Telegram.Flows;
+using Leprechaun.Application.Telegram.Flows.SalaryIncome;
 using Leprechaun.Domain.Interfaces;
 using Leprechaun.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -58,7 +59,7 @@ builder.Services.AddScoped<IPersonService, PersonService>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
 
 //Flows
-builder.Services.AddScoped<SalaryIncomeFlowService>();
+builder.Services.AddScoped<IChatFlow, SalaryIncomeFlowService>();
 
 var app = builder.Build();
 
