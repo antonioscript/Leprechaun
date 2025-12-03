@@ -24,6 +24,9 @@ public static class TelegramCommandParser
         if (text.StartsWith("/cadastrar_salario", StringComparison.OrdinalIgnoreCase))
             return TelegramCommand.CadastrarSalario;
 
+        if (text.StartsWith("/saldo_salario_acumulado", StringComparison.OrdinalIgnoreCase))
+            return TelegramCommand.Cancelar;
+
         if (text.StartsWith("/cancelar", StringComparison.OrdinalIgnoreCase))
             return TelegramCommand.Cancelar;
 

@@ -8,5 +8,6 @@ public enum TelegramCommand
     Ping,
     Person,
     CadastrarSalario,
-    Cancelar
+    Cancelar,
+    SaldoSalarioAcumulado
 }
