@@ -15,12 +15,13 @@ public static class BotTexts
         "/cadastrar_salario - Registrar recebimento de salário\n";
 
     public static string Help() =>
-        "📚 *Comandos disponíveis:*\n\n" +
+        "📚 **Comandos disponíveis:**\n\n" +
         "/start - Mensagem de boas-vindas\n" +
         "/help - Lista os comandos\n" +
         "/ping - Testa se o bot está online\n" +
         "/person - Lista os titulares da conta\n" +
-        "/cadastrar_salario - Fluxo para registrar o recebimento do salário\n";
+        "/cadastrar_salario - Fluxo para registrar o recebimento do salário\n" +
+        "/saldo_salario_acumulado - Valor total do salario acumulado\n";
 
     public static string UnknownCommand() =>
         "Não entendi 🤔\nUse /help para ver os comandos disponíveis.";
@@ -32,7 +33,7 @@ public static class BotTexts
             return "Nenhum titular encontrado no banco.";
 
         var sb = new StringBuilder();
-        sb.AppendLine("👥 *Titulares:*\n");
+        sb.AppendLine("👥 **Titulares:**\n");
         foreach (var p in list)
             sb.AppendLine($"• {p.Name}");
 

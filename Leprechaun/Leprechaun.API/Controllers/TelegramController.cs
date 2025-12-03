@@ -29,9 +29,7 @@ public class TelegramController : ControllerBase
     }
 
     [HttpPost("webhook")]
-    public async Task<IActionResult> Webhook(
-        [FromBody] TelegramUpdate update,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> Webhook([FromBody] TelegramUpdate update,CancellationToken cancellationToken)
     {
         if (!TryGetChatAndText(update, out var chatId, out var userText))
             return Ok();
@@ -74,10 +72,7 @@ public class TelegramController : ControllerBase
     // Métodos privados
     // ==========================
 
-    private static bool TryGetChatAndText(
-        TelegramUpdate update,
-        out long chatId,
-        out string userText)
+    private static bool TryGetChatAndText(TelegramUpdate update,out long chatId,out string userText)
     {
         chatId = 0;
         userText = string.Empty;
@@ -103,9 +98,7 @@ public class TelegramController : ControllerBase
         return false;
     }
 
-    private async Task<ChatState> GetOrCreateStateAsync(
-        long chatId,
-        CancellationToken cancellationToken)
+    private async Task<ChatState> GetOrCreateStateAsync(long chatId,CancellationToken cancellationToken)
     {
         var state = await _chatStateService.GetAsync(chatId, cancellationToken);
         if (state is not null)
@@ -118,10 +111,7 @@ public class TelegramController : ControllerBase
         };
     }
 
-    private async Task HandleCancelAsync(
-        long chatId,
-        ChatState state,
-        CancellationToken cancellationToken)
+    private async Task HandleCancelAsync(long chatId,ChatState state, CancellationToken cancellationToken)
     {
         if (state.State != FlowStates.Idle)
         {
@@ -140,12 +130,7 @@ public class TelegramController : ControllerBase
         }
     }
 
-    private async Task<bool> TryHandleFlowsAsync(
-        long chatId,
-        string userText,
-        ChatState state,
-        TelegramCommand command,
-        CancellationToken cancellationToken)
+    private async Task<bool> TryHandleFlowsAsync(long chatId,string userText,ChatState state, TelegramCommand command, CancellationToken cancellationToken)
     {
         foreach (var flow in _flows)
         {
