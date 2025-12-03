@@ -29,35 +29,43 @@ public class TelegramController : ControllerBase
     }
 
     [HttpPost("webhook")]
-    public async Task<IActionResult> Webhook([FromBody] TelegramUpdate update, CancellationToken cancellationToken)
+    public async Task<IActionResult> Webhook(
+        [FromBody] TelegramUpdate update,
+        CancellationToken cancellationToken)
     {
-        if (!HasValidMessage(update))
+        if (!TryGetChatAndText(update, out var chatId, out var userText))
             return Ok();
-
-        var chatId = update.Message!.Chat.Id;
-        var userText = update.Message.Text!.Trim();
 
         var command = TelegramCommandParser.Parse(userText);
         var state = await GetOrCreateStateAsync(chatId, cancellationToken);
 
-        // 1) /cancelar é global
+        // /cancelar global
         if (command == TelegramCommand.Cancelar)
         {
             await HandleCancelAsync(chatId, state, cancellationToken);
             return Ok();
         }
 
-        // 2) Tentar fluxos (salário, depois outros)
-        var handledByFlow = await TryHandleFlowsAsync(chatId, userText, state, command, cancellationToken);
+        // Fluxos (salário etc.)
+        var handledByFlow = await TryHandleFlowsAsync(
+            chatId,
+            userText,
+            state,
+            command,
+            cancellationToken);
+
         if (handledByFlow)
             return Ok();
 
-        // 3) Comandos simples (start, help, ping, person…)
-        var handledSimple = await TryHandleSimpleCommandAsync(chatId, command, cancellationToken);
+        // Comandos simples
+        var handledSimple = await TryHandleSimpleCommandAsync(
+            chatId,
+            command,
+            cancellationToken);
+
         if (handledSimple)
             return Ok();
 
-        // 4) Fallback
         await SendUnknownCommandAsync(chatId, cancellationToken);
         return Ok();
     }
@@ -66,10 +74,38 @@ public class TelegramController : ControllerBase
     // Métodos privados
     // ==========================
 
-    private static bool HasValidMessage(TelegramUpdate update)
-        => update.Message is { Text: not null } && !string.IsNullOrWhiteSpace(update.Message.Text);
+    private static bool TryGetChatAndText(
+        TelegramUpdate update,
+        out long chatId,
+        out string userText)
+    {
+        chatId = 0;
+        userText = string.Empty;
 
-    private async Task<ChatState> GetOrCreateStateAsync(long chatId, CancellationToken cancellationToken)
+        // Mensagem normal
+        if (update.Message is { Text: { } } msg &&
+            !string.IsNullOrWhiteSpace(msg.Text))
+        {
+            chatId = msg.Chat.Id;
+            userText = msg.Text.Trim();
+            return true;
+        }
+
+        // Callback de inline button
+        if (update.CallbackQuery is { Data: { } } cb &&
+            cb.Message is { Chat: { } } cbMsg)
+        {
+            chatId = cbMsg.Chat.Id;
+            userText = cb.Data!.Trim();
+            return true;
+        }
+
+        return false;
+    }
+
+    private async Task<ChatState> GetOrCreateStateAsync(
+        long chatId,
+        CancellationToken cancellationToken)
     {
         var state = await _chatStateService.GetAsync(chatId, cancellationToken);
         if (state is not null)
@@ -82,7 +118,10 @@ public class TelegramController : ControllerBase
         };
     }
 
-    private async Task HandleCancelAsync(long chatId, ChatState state, CancellationToken cancellationToken)
+    private async Task HandleCancelAsync(
+        long chatId,
+        ChatState state,
+        CancellationToken cancellationToken)
     {
         if (state.State != FlowStates.Idle)
         {
@@ -110,7 +149,13 @@ public class TelegramController : ControllerBase
     {
         foreach (var flow in _flows)
         {
-            var handled = await flow.TryHandleAsync(chatId, userText, state, command, cancellationToken);
+            var handled = await flow.TryHandleAsync(
+                chatId,
+                userText,
+                state,
+                command,
+                cancellationToken);
+
             if (handled)
                 return true;
         }
@@ -157,7 +202,9 @@ public class TelegramController : ControllerBase
         }
     }
 
-    private async Task SendUnknownCommandAsync(long chatId, CancellationToken cancellationToken)
+    private async Task SendUnknownCommandAsync(
+        long chatId,
+        CancellationToken cancellationToken)
     {
         await _telegramSender.SendMessageAsync(
             chatId,
