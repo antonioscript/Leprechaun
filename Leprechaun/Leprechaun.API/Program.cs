@@ -46,6 +46,7 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IFinanceTransactionRepository, FinanceTransactionRepository>();
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 builder.Services.AddScoped<IChatStateRepository, ChatStateRepository>();
+builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
 
 //Servcies
 builder.Services.AddScoped<IChatStateService, ChatStateService>();
@@ -54,6 +55,7 @@ builder.Services.AddScoped<ICostCenterService, CostCenterService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IFinanceTransactionService, FinanceTransactionService>();
 builder.Services.AddScoped<IPersonService, PersonService>();
+builder.Services.AddScoped<IExpenseService, ExpenseService>();
 
 //Flows
 builder.Services.AddScoped<SalaryIncomeFlowService>();

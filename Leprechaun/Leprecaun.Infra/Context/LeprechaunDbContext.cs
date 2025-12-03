@@ -15,6 +15,7 @@ public class LeprechaunDbContext : DbContext
     public DbSet<CostCenter> CostCenters => Set<CostCenter>();
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<FinanceTransaction> FinanceTransactions => Set<FinanceTransaction>();
+    public DbSet<Expense> Expenses => Set<Expense>();
     
     public DbSet<ChatState> ChatStates { get; set; }
 
@@ -135,6 +136,31 @@ public class LeprechaunDbContext : DbContext
         entity.HasOne(f => f.Category)
             .WithMany()
             .HasForeignKey(f => f.CategoryId);
+    });
+    
+    // Expense
+    modelBuilder.Entity<Expense>(entity =>
+    {
+        entity.ToTable("recurringexpensetemplate");
+
+        entity.HasKey(e => e.Id);
+
+        entity.Property(e => e.Id).HasColumnName("id");
+        entity.Property(e => e.CostCenterId).HasColumnName("costcenterid");
+        entity.Property(e => e.Name).HasColumnName("name").HasMaxLength(200);
+        entity.Property(e => e.Description).HasColumnName("description").HasMaxLength(500);
+        entity.Property(e => e.DefaultAmount).HasColumnName("defaultamount").HasColumnType("numeric(18,2)");
+        entity.Property(e => e.DueDay).HasColumnName("dueday");
+        entity.Property(e => e.CategoryId).HasColumnName("categoryid");
+        entity.Property(e => e.IsActive).HasColumnName("isactive").HasDefaultValue(true);
+
+        entity.HasOne(e => e.CostCenter)
+            .WithMany()
+            .HasForeignKey(e => e.CostCenterId);
+
+        entity.HasOne(e => e.Category)
+            .WithMany()
+            .HasForeignKey(e => e.CategoryId);
     });
     
     modelBuilder.Entity<ChatState>(entity =>
