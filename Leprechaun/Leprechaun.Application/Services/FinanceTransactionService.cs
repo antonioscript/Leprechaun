@@ -75,6 +75,22 @@ public class FinanceTransactionService : IFinanceTransactionService
         return totalIncome - totalOutflow;
     }
 
+    public async Task<DateTime?> GetLastSalaryAccumulatedUpdateAsync(CancellationToken cancellationToken = default)
+    {
+        var all = await _transactionRepository.GetAllAsync(cancellationToken);
+
+        // Mesma lógica de "o que afeta salário acumulado"
+        var relevant = all
+            .Where(t =>
+                (t.TransactionType == "Income" && t.TargetCostCenterId == null) ||
+                ((t.TransactionType == "Expense" || t.TransactionType == "Transfer")
+                 && t.SourceCostCenterId == null))
+            .OrderByDescending(t => t.TransactionDate)
+            .FirstOrDefault();
+
+        return relevant?.TransactionDate;
+    }
+
     // ---------- Operações de negócio ----------
 
     public async Task<FinanceTransaction> RegisterIncomeAsync(
