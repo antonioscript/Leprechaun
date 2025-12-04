@@ -148,24 +148,14 @@ public class TelegramController : ControllerBase
         return false;
     }
 
-    private async Task<bool> TryHandleSimpleCommandAsync(
-        long chatId,
-        TelegramCommand command,
-        CancellationToken cancellationToken)
+    private async Task<bool> TryHandleSimpleCommandAsync(long chatId, TelegramCommand command, CancellationToken cancellationToken)
     {
         switch (command)
         {
             case TelegramCommand.Start:
                 await _telegramSender.SendMessageAsync(
                     chatId,
-                    BotTexts.Welcome(),
-                    cancellationToken);
-                return true;
-
-            case TelegramCommand.Help:
-                await _telegramSender.SendMessageAsync(
-                    chatId,
-                    BotTexts.Help(),
+                    BotTexts.Start(),
                     cancellationToken);
                 return true;
 
@@ -176,24 +166,19 @@ public class TelegramController : ControllerBase
                     cancellationToken);
                 return true;
 
-            case TelegramCommand.Person:
-                var persons = await _personService.GetAllAsync(cancellationToken);
-                var msg = BotTexts.PersonsList(persons);
-                await _telegramSender.SendMessageAsync(chatId, msg, cancellationToken);
-                return true;
-
+            
             default:
                 return false;
         }
     }
 
-    private async Task SendUnknownCommandAsync(
-        long chatId,
-        CancellationToken cancellationToken)
-    {
-        await _telegramSender.SendMessageAsync(
-            chatId,
-            BotTexts.UnknownCommand(),
-            cancellationToken);
-    }
+    //private async Task SendUnknownCommandAsync(
+    //    long chatId,
+    //    CancellationToken cancellationToken)
+    //{
+    //    await _telegramSender.SendMessageAsync(
+    //        chatId,
+    //        BotTexts.UnknownCommand(),
+    //        cancellationToken);
+    //}
 }

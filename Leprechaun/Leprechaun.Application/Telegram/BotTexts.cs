@@ -14,7 +14,8 @@ public static class BotTexts
         "/person - Lista os titulares\n" +
         "/cadastrar_salario - Registrar recebimento de salário\n";
 
-    public static string Help() =>
+    public static string Start() =>
+    "🍀 Olá! Eu sou o Leprechaun Bot.\n\n" +
     "📚 *Comandos disponíveis:*\n\n" +
 
     "*📊 Relatórios:*\n" +
@@ -41,7 +42,6 @@ public static class BotTexts
 
     "*⚙️ Sistema:*\n" +
     "/start - Mensagem inicial do bot\n" +
-    "/help - Lista todos os comandos\n" +
     "/ping - Testa se o bot está online\n" +
     "/cancelar - Cancela o fluxo atual\n";
 
@@ -49,17 +49,4 @@ public static class BotTexts
     public static string UnknownCommand() =>
         "Não entendi 🤔\nUse /help para ver os comandos disponíveis.";
 
-    public static string PersonsList(IEnumerable<PersonResponse> persons)
-    {
-        var list = persons.ToList();
-        if (!list.Any())
-            return "Nenhum titular encontrado no banco.";
-
-        var sb = new StringBuilder();
-        sb.AppendLine("👥 **Titulares:**\n");
-        foreach (var p in list)
-            sb.AppendLine($"• {p.Name}");
-
-        return sb.ToString();
-    }
 }
