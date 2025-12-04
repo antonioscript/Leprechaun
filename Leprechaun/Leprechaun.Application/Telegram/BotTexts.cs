@@ -66,6 +66,10 @@ public static class BotTexts
         "/extrato_caixinha_mes - Ver o extrato das caixinhas no mês atual\n" +
         "/transferir_entre_caixinhas - Fazer outra transferência entre caixinhas\n";
 
+    public static string HintAfterSuggestion(long id) =>
+        $"✅ Obrigado! Sua sugestão foi registrada com o código #{id}.\n\n" +
+        "Quando quiser, pode enviar novas ideias usando /sugerir_feature.";
+
     public static string UnknownCommand() =>
         "Não entendi 🤔\nUse /help para ver os comandos disponíveis.";
 

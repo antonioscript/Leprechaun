@@ -58,6 +58,8 @@ builder.Services.AddScoped<IFinanceTransactionRepository, FinanceTransactionRepo
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 builder.Services.AddScoped<IChatStateRepository, ChatStateRepository>();
 builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
+builder.Services.AddScoped<ISupportSuggestionRepository, SupportSuggestionRepository>();
+
 
 //Servcies
 builder.Services.AddScoped<IChatStateService, ChatStateService>();
@@ -67,6 +69,8 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IFinanceTransactionService, FinanceTransactionService>();
 builder.Services.AddScoped<IPersonService, PersonService>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
+builder.Services.AddScoped<ISupportSuggestionService, SupportSuggestionService>();
+
 
 //Flows
 builder.Services.AddScoped<IChatFlow, SalaryIncomeFlowService>();
@@ -79,7 +83,6 @@ builder.Services.AddScoped<IChatFlow, SalaryExpenseFlowService>();
 builder.Services.AddScoped<IChatFlow, RegisterCostCenterExpenseFlowService>();
 builder.Services.AddScoped<IChatFlow, CostCenterMonthlyStatementFlowService>();
 builder.Services.AddScoped<IChatFlow, SalaryAccumulatedMonthlyStatementFlowService>();
-
 
 
 var app = builder.Build();

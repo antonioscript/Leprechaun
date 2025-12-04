@@ -18,6 +18,7 @@ public class LeprechaunDbContext : DbContext
     public DbSet<Expense> Expenses => Set<Expense>();
     
     public DbSet<ChatState> ChatStates { get; set; }
+    public DbSet<SupportSuggestion> SupportSuggestions { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -180,6 +181,28 @@ public class LeprechaunDbContext : DbContext
         entity.Property(c => c.TempTargetCostCenterId).HasColumnName("temptargetcostcenterid");
 
         entity.Property(c => c.UpdatedAt).HasColumnName("updatedat");
+    });
+
+    modelBuilder.Entity<SupportSuggestion>(entity =>
+    {
+        entity.ToTable("SupportSuggestion");
+
+        entity.HasKey(e => e.Id);
+
+        entity.Property(e => e.Description)
+            .IsRequired()
+            .HasMaxLength(1000);
+
+        entity.Property(e => e.CreatedAt)
+            .IsRequired();
+
+        entity.Property(e => e.Source)
+            .IsRequired()
+            .HasMaxLength(50);
+
+        entity.Property(e => e.Status)
+            .IsRequired()
+            .HasMaxLength(20);
     });
 
     }
