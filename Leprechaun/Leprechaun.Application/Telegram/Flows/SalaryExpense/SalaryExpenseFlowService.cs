@@ -152,13 +152,13 @@ public class SalaryExpenseFlowService : IChatFlow
         var totalBalance = await _transactionService.GetTotalSalaryAccumulatedAsync(cancellationToken);
 
         var sb = new StringBuilder();
-        sb.AppendLine("💸 *Registro de despesa do salário acumulado*");
-        sb.AppendLine($"Titular selecionado: *{person.Name}*");
+        sb.AppendLine("💸 Registro de despesa do salário acumulado");
+        sb.AppendLine($"Titular selecionado: {person.Name}");
         sb.AppendLine();
-        sb.AppendLine($"💼 Saldo atual do titular: *R$ {personBalance:N2}*\n");
-        sb.AppendLine($"📊 Saldo acumulado total (todos): *R$ {totalBalance:N2}*");
+        sb.AppendLine($"💼 Saldo atual do titular: R$ {personBalance:N2}\n");
+        sb.AppendLine($"📊 Saldo acumulado total (todos): R$ {totalBalance:N2}");
         sb.AppendLine();
-        sb.AppendLine("Por favor, informe o *valor da despesa* (ex: 250,00):");
+        sb.AppendLine("Por favor, informe o valor da despesa (ex: 250,00):");
 
         await _telegramSender.SendMessageAsync(
             chatId,
@@ -193,7 +193,7 @@ public class SalaryExpenseFlowService : IChatFlow
         {
             await _telegramSender.SendMessageAsync(
                 chatId,
-                "⚠️ Valor inválido. Tente novamente. Ex: 2560,34",
+                "⚠️ Valor inválido. Tente novamente. Ex: 2500",
                 cancellationToken);
             return;
         }
@@ -205,7 +205,7 @@ public class SalaryExpenseFlowService : IChatFlow
         {
             await _telegramSender.SendMessageAsync(
                 chatId,
-                $"⚠️ Saldo insuficiente.\n\n Saldo atual do titular: *R$ {personBalance:N2}*.\\nnInforme um valor menor.",
+                $"⚠️ Saldo insuficiente.\n\n Saldo atual do titular: R$ {personBalance:N2}.\\nnInforme um valor menor.",
                 cancellationToken);
             return;
         }
@@ -217,7 +217,7 @@ public class SalaryExpenseFlowService : IChatFlow
 
         await _telegramSender.SendMessageAsync(
             chatId,
-            "📝 Informe a *descrição da despesa*:",
+            "📝 Informe a descrição da despesa:",
             cancellationToken);
     }
 
@@ -274,16 +274,16 @@ public class SalaryExpenseFlowService : IChatFlow
 
         // Montar resposta
         var reply = new StringBuilder();
-        reply.AppendLine("✅ *Despesa registrada com sucesso!*");
+        reply.AppendLine("✅ Despesa registrada com sucesso!");
         reply.AppendLine();
-        reply.AppendLine($"👤 *Titular:* {person?.Name}");
-        reply.AppendLine($"💸 *Valor:* R$ {amount:N2}");
-        reply.AppendLine($"📝 *Descrição:* {description}");
-        reply.AppendLine($"📅 *Data:* {DateTime.Now:dd/MM/yyyy HH:mm}");
+        reply.AppendLine($"👤 Titular: {person?.Name}");
+        reply.AppendLine($"💸 Valor: R$ {amount:N2}");
+        reply.AppendLine($"📝 Descrição: {description}");
+        reply.AppendLine($"📅 Data: {DateTime.Now:dd/MM/yyyy HH:mm}");
         reply.AppendLine();
-        reply.AppendLine($"💼 *Novo saldo do titular:* R$ {newBalance:N2}");
+        reply.AppendLine($"💼 Novo saldo do titular: R$ {newBalance:N2}");
         reply.AppendLine();
-        reply.AppendLine($"🌎 *Novo saldo total acumulado:* R$ {totalBalance:N2}");
+        reply.AppendLine($"🌎 Novo saldo total acumulado: R$ {totalBalance:N2}");
 
         await _telegramSender.SendMessageAsync(
             chatId,

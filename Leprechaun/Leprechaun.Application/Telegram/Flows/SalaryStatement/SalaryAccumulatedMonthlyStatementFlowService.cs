@@ -79,20 +79,20 @@ public class SalaryAccumulatedMonthlyStatementFlowService : IChatFlow
             .ToList();
 
         var sb = new StringBuilder();
-        sb.AppendLine("📊 *Extrato do salário acumulado (mês atual)*");
-        sb.AppendLine($"💼 Saldo atual total (todos os titulares): *R$ {totalAccumulated:N2}*");
+        sb.AppendLine("📊 Extrato do salário acumulado (mês atual)");
+        sb.AppendLine($"💼 Saldo atual total (todos os titulares): R$ {totalAccumulated:N2}");
         sb.AppendLine();
 
         // ---------- DESPESAS DIRETAS ----------
 
         if (!monthExpenses.Any())
         {
-            sb.AppendLine("🧾 *Despesas diretas no mês:*\n");
+            sb.AppendLine("🧾 *espesas diretas no mês:\n");
             sb.AppendLine("Nenhuma despesa registrada a partir do salário acumulado neste mês.");
         }
         else
         {
-            sb.AppendLine("🧾 *Despesas diretas no mês:*\n");
+            sb.AppendLine("🧾 Despesas diretas no mês:\n");
 
             foreach (var tx in monthExpenses)
             {
@@ -112,7 +112,7 @@ public class SalaryAccumulatedMonthlyStatementFlowService : IChatFlow
 
             var totalExpenses = monthExpenses.Sum(t => t.Amount);
             sb.AppendLine();
-            sb.AppendLine($"💸 *Total de despesas diretas no mês:* R$ {totalExpenses:N2}");
+            sb.AppendLine($"💸 Total de despesas diretas no mês: R$ {totalExpenses:N2}");
         }
 
         // ---------- TRANSFERÊNCIAS INTERNAS ----------
@@ -122,7 +122,7 @@ public class SalaryAccumulatedMonthlyStatementFlowService : IChatFlow
         if (internalTransfers.Any())
         {
             sb.AppendLine();
-            sb.AppendLine("🔁 *Transferências internas no mês (salário → caixinhas):*");
+            sb.AppendLine("🔁 Transferências internas no mês (salário → caixinhas):");
             sb.AppendLine();
 
             foreach (var tx in internalTransfers)
@@ -150,10 +150,10 @@ public class SalaryAccumulatedMonthlyStatementFlowService : IChatFlow
             var totalOut = totalExpenses + totalTransfers;
 
             sb.AppendLine();
-            sb.AppendLine($"💸 *Total de despesas diretas no mês:* R$ {totalExpenses:N2}");
-            sb.AppendLine($"🔼 *Total transferido para caixinhas no mês:* R$ {totalTransfers:N2}");
+            sb.AppendLine($"💸 Total de despesas diretas no mês: R$ {totalExpenses:N2}");
+            sb.AppendLine($"🔼 Total transferido para caixinhas no mês: R$ {totalTransfers:N2}");
             sb.AppendLine();
-            sb.AppendLine($"📉 *Total de saídas do salário acumulado (despesas + transferências):* R$ {totalOut:N2}");
+            sb.AppendLine($"📉 Total de saídas do salário acumulado (despesas + transferências): R$ {totalOut:N2}");
         }
 
 

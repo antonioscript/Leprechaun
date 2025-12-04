@@ -73,20 +73,20 @@ public class SalaryAccumulatedInfoFlowService : IChatFlow
 
         sb.AppendLine("*💼 Saldo do Salário Acumulado*");
         sb.AppendLine();
-        sb.AppendLine($"💰 *Saldo total:* R$ {total:N2}");
+        sb.AppendLine($"💰 Saldo total: R$ {total:N2}");
         sb.AppendLine();
 
-        sb.AppendLine($"👩 *Catarina:* R$ {catarinaAmount:N2}");
-        sb.AppendLine($"👨 *Antônio:* R$ {antonioAmount:N2}");
+        sb.AppendLine($"👩 Catarina: R$ {catarinaAmount:N2}");
+        sb.AppendLine($"👨 Antônio: R$ {antonioAmount:N2}");
         sb.AppendLine();
 
         if (lastUpdate.HasValue)
-            sb.AppendLine($"🕒 *Última atualização:* {lastUpdate:dd/MM/yyyy HH:mm}");
+            sb.AppendLine($"🕒 Última atualização: {lastUpdate:dd/MM/yyyy HH:mm}");
         else
-            sb.AppendLine("🕒 *Última atualização:* Sem movimentações registradas.");
+            sb.AppendLine("🕒 Última atualização: Sem movimentações registradas.");
 
         sb.AppendLine();
-        sb.AppendLine($"📊 Isso representa *{percentOfMillion:N2}%* de R$ 1.000.000,00.");
+        sb.AppendLine($"📊 Isso representa {percentOfMillion:N2}% de R$ 1.000.000,00.");
 
         var text = sb.ToString();
 

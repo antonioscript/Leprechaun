@@ -200,7 +200,7 @@ public class TransferSalaryToCostCenterFlowService : IChatFlow
 
         await _telegramSender.SendMessageAsync(
             chatId,
-            "💰 Informe o *valor* a transferir do salário acumulado para a caixinha. Ex: 2500,00",
+            "💰 Informe o valor a transferir do salário acumulado para a caixinha. Ex: 2500,00",
             cancellationToken);
     }
 

@@ -187,8 +187,8 @@ public class RegisterCostCenterExpenseFlowService : IChatFlow
 
         await _telegramSender.SendMessageAsync(
             chatId,
-            $"💰 *Saldo atual da caixinha:* R$ {balance:N2}\n\n" +
-            "Informe o *valor da despesa*:",
+            $"💰 Saldo atual da caixinha: R$ {balance:N2}\n\n" +
+            "Informe o valor da despesa:",
             cancellationToken);
     }
 
@@ -301,15 +301,15 @@ public class RegisterCostCenterExpenseFlowService : IChatFlow
         await _chatStateService.ClearAsync(chatId, cancellationToken);
 
         var reply = new StringBuilder();
-        reply.AppendLine("✅ *Despesa registrada com sucesso!*");
+        reply.AppendLine("✅ Despesa registrada com sucesso!");
         reply.AppendLine();
-        reply.AppendLine($"👤 *Titular:* {person.Name}");
-        reply.AppendLine($"📦 *Caixinha:* {center.Name}");
-        reply.AppendLine($"💸 *Valor:* R$ {amount:N2}");
-        reply.AppendLine($"📝 *Descrição:* {description}");
-        reply.AppendLine($"📅 *Data:* {DateTime.Now:dd/MM/yyyy HH:mm}");
+        reply.AppendLine($"👤 Titular: {person.Name}");
+        reply.AppendLine($"📦 Caixinha: {center.Name}");
+        reply.AppendLine($"💸 Valor: R$ {amount:N2}");
+        reply.AppendLine($"📝 Descrição: {description}");
+        reply.AppendLine($"📅 Data: {DateTime.Now:dd/MM/yyyy HH:mm}");
         reply.AppendLine();
-        reply.AppendLine($"💼 *Novo saldo da caixinha:* R$ {newBalance:N2}");
+        reply.AppendLine($"💼 Novo saldo da caixinha: R$ {newBalance:N2}");
 
         await _telegramSender.SendMessageAsync(
             chatId,

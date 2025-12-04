@@ -167,7 +167,7 @@ public class SalaryIncomeFlowService : IChatFlow
         {
             await _telegramSender.SendMessageAsync(
                 chatId,
-                "Valor inválido. Tente novamente. Ex: 2560,34",
+                "Valor inválido. Tente novamente. Ex: 2500",
                 cancellationToken);
             return;
         }

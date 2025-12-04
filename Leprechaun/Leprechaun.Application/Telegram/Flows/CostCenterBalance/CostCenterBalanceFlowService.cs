@@ -132,7 +132,7 @@ public class CostCenterBalanceFlowService : IChatFlow
         }
 
         var sb = new StringBuilder();
-        sb.AppendLine("📦 *Saldos das caixinhas*");
+        sb.AppendLine("📦 Saldos das caixinhas");
         sb.AppendLine($"Titular: {person.Name}");
         sb.AppendLine();
 
@@ -146,7 +146,7 @@ public class CostCenterBalanceFlowService : IChatFlow
         }
 
         sb.AppendLine();
-        sb.AppendLine($"💰 *Total em caixinhas:* R$ {total:N2}");
+        sb.AppendLine($"💰 Total em caixinhas: R$ {total:N2}");
 
         await _telegramSender.SendMessageAsync(
             chatId,

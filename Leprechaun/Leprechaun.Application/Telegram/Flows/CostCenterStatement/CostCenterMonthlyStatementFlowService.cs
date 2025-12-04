@@ -241,18 +241,18 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
         var centersById = centers.ToDictionary(c => c.Id, c => c.Name);
 
         var sb = new StringBuilder();
-        sb.AppendLine("📊 *Extrato da caixinha (mês atual)*");
-        sb.AppendLine($"👤 Titular: *{person?.Name}*");
-        sb.AppendLine($"📦 Caixinha: *{center.Name}*");
+        sb.AppendLine("📊 Extrato da caixinha (mês atual)");
+        sb.AppendLine($"👤 Titular: {person?.Name}");
+        sb.AppendLine($"📦 Caixinha: {center.Name}");
         sb.AppendLine();
-        sb.AppendLine($"💰 Saldo atual da caixinha: *R$ {balance:N2}*");
+        sb.AppendLine($"💰 Saldo atual da caixinha: R$ {balance:N2}");
         sb.AppendLine();
 
         // --- DESPESAS ---
 
         if (!monthExpenses.Any())
         {
-            sb.AppendLine("🧾 *Despesas no mês:*\n");
+            sb.AppendLine("🧾 Despesas no mês:\n");
             sb.AppendLine("Nenhuma despesa registrada para esta caixinha neste mês.");
         }
         else
@@ -273,7 +273,7 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
 
             var totalExpenses = monthExpenses.Sum(t => t.Amount);
             sb.AppendLine();
-            sb.AppendLine($"💸 *Total de despesas no mês:* R$ {totalExpenses:N2}");
+            sb.AppendLine($"💸 Total de despesas no mês: R$ {totalExpenses:N2}");
         }
 
         // --- TRANSFERÊNCIAS INTERNAS ---
@@ -281,7 +281,7 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
         if (outgoingTransfers.Any() || incomingTransfers.Any())
         {
             sb.AppendLine();
-            sb.AppendLine("🔁 *Transferências internas no mês:*");
+            sb.AppendLine("🔁 Transferências internas no mês:");
             sb.AppendLine();
 
             foreach (var tx in outgoingTransfers)
@@ -293,7 +293,7 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
                     : "Salário Acumulado";
 
                 sb.AppendLine(
-                    $"- R$ {tx.Amount:N2} | Transferência *enviada* para caixinha {targetName} | {dateLocal:dd/MM/yyyy}");
+                    $"- R$ {tx.Amount:N2} | Transferência enviada para caixinha {targetName} | {dateLocal:dd/MM/yyyy}");
             }
 
             foreach (var tx in incomingTransfers)
@@ -305,7 +305,7 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
                     : "Salário Acumulado";
 
                 sb.AppendLine(
-                    $"- R$ {tx.Amount:N2} | Transferência *recebida* de caixinha {sourceName} | {dateLocal:dd/MM/yyyy}");
+                    $"- R$ {tx.Amount:N2} | Transferência recebida de caixinha {sourceName} | {dateLocal:dd/MM/yyyy}");
             }
 
             var totalExpenses = monthExpenses.Sum(t => t.Amount);
@@ -314,11 +314,11 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
             var totalOut = totalExpenses + totalTransfersOut;
 
             sb.AppendLine();
-            sb.AppendLine($"💸 *Total de despesas no mês:* R$ {totalExpenses:N2}");
-            sb.AppendLine($"🔼 *Total transferido para outras caixinhas (saídas):* R$ {totalTransfersOut:N2}");
-            sb.AppendLine($"🔽 *Total recebido de outras caixinhas (entradas):* R$ {totalTransfersIn:N2}");
+            sb.AppendLine($"💸 Total de despesas no mês: R$ {totalExpenses:N2}");
+            sb.AppendLine($"🔼 Total transferido para outras caixinhas (saídas): R$ {totalTransfersOut:N2}");
+            sb.AppendLine($"🔽 Total recebido de outras caixinhas (entradas): R$ {totalTransfersIn:N2}");
             sb.AppendLine();
-            sb.AppendLine($"📉 *Total de saídas (despesas + transferências enviadas):* R$ {totalOut:N2}");
+            sb.AppendLine($"📉 Total de saídas (despesas + transferências enviadas): R$ {totalOut:N2}");
         }
 
         await _telegramSender.SendMessageAsync(
