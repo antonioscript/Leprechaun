@@ -64,7 +64,7 @@ public class TelegramController : ControllerBase
         if (handledSimple)
             return Ok();
 
-        await SendUnknownCommandAsync(chatId, cancellationToken);
+       // await SendUnknownCommandAsync(chatId, cancellationToken);
         return Ok();
     }
 
