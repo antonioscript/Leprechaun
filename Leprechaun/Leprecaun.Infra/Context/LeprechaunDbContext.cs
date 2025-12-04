@@ -183,29 +183,40 @@ public class LeprechaunDbContext : DbContext
         entity.Property(c => c.UpdatedAt).HasColumnName("updatedat");
     });
 
-    modelBuilder.Entity<SupportSuggestion>(entity =>
-    {
-        entity.ToTable("SupportSuggestion");
+        modelBuilder.Entity<SupportSuggestion>(entity =>
+        {
+            entity.ToTable("SupportSuggestion");
 
-        entity.HasKey(e => e.Id);
+            entity.HasKey(e => e.Id);
 
-        entity.Property(e => e.Description)
-            .IsRequired()
-            .HasMaxLength(1000);
+            entity.Property(e => e.Id)
+                .HasColumnName("Id");
 
-        entity.Property(e => e.CreatedAt)
-            .IsRequired();
+            entity.Property(e => e.Description)
+                .IsRequired()
+                .HasMaxLength(1000)
+                .HasColumnName("Description");
 
-        entity.Property(e => e.Source)
-            .IsRequired()
-            .HasMaxLength(50);
+            entity.Property(e => e.CreatedAt)
+                .IsRequired()
+                .HasColumnName("CreatedAt");
 
-        entity.Property(e => e.Status)
-            .IsRequired()
-            .HasMaxLength(20);
-    });
+            entity.Property(e => e.ChatId)
+                .HasColumnName("ChatId");
+
+            entity.Property(e => e.Source)
+                .IsRequired()
+                .HasMaxLength(50)
+                .HasColumnName("Source");
+
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(20)
+                .HasColumnName("Status");
+        });
+
 
     }
-    
-    
+
+
 }

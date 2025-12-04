@@ -35,6 +35,8 @@ public static class BotTexts
     "⚙️ Sistema:\n" +
     "/start - Mensagem inicial do bot\n" +
     "/ping - Testa se o bot está online\n" +
+    "/sugerir_feature - Sugesrir Ideias de Novas Features\n" +
+    "/listar_features - Sugesrir Ideias de Novas Features\n" +
     "/cancelar - Cancela o fluxo atual\n";
 
 
@@ -69,6 +71,12 @@ public static class BotTexts
     public static string HintAfterSuggestion(long id) =>
         $"✅ Obrigado! Sua sugestão foi registrada com o código #{id}.\n\n" +
         "Quando quiser, pode enviar novas ideias usando /sugerir_feature.";
+
+    public static string FormatSuggestionListHeader() =>
+        "📝 Últimas sugestões registradas:\n";
+
+    public static string NoSuggestions() =>
+        "Ainda não há sugestões registradas.";
 
     public static string UnknownCommand() =>
         "Não entendi 🤔\nUse /help para ver os comandos disponíveis.";
