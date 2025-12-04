@@ -15,12 +15,36 @@ public static class BotTexts
         "/cadastrar_salario - Registrar recebimento de salário\n";
 
     public static string Help() =>
-        "📚 *Comandos disponíveis:*\n\n" +
-        "/start - Mensagem de boas-vindas\n" +
-        "/help - Lista os comandos\n" +
-        "/ping - Testa se o bot está online\n" +
-        "/person - Lista os titulares da conta\n" +
-        "/cadastrar_salario - Fluxo para registrar o recebimento do salário\n";
+    "📚 *Comandos disponíveis:*\n\n" +
+
+    "*📊 Relatórios:*\n" +
+    "/saldo_salario_acumulado - Mostra o total acumulado e divisão por titular\n\n" +
+    "/extrato_salario_acumulado_mes - Extrato mensal das saídas do salário acumulado\n\n" +
+    "/saldo_caixinhas - Mostra o saldo das caixinhas por titular\n\n" +
+    "/extrato_caixinha_mes - Extrato de despesas da caixinha no mês atual\n\n" +
+        
+
+    "*💵 Salário Acumulado:*\n" +
+    "/transferir_sal_acml_para_caixinha - Transferir do salário acumulado para uma caixinha\n\n" +
+    "/registrar_despesa_sal_acml - Registrar uma despesa que sai do salário acumulado\n\n" +
+
+
+    "*📦 Caixinhas:*\n" +
+    "/criar_caixinha - Criar uma nova caixinha\n\n" +
+    "/transferir_entre_caixinhas - Transferir valor entre caixinhas do mesmo titular\n\n" +
+    "/registrar_despesa_caixinha - Registrar uma despesa retirada de uma caixinha\n\n" +
+
+
+    "*💰 Renda:*\n" +
+    "/cadastrar_salario - Fluxo para registrar o recebimento do salário\n\n" +
+
+
+    "*⚙️ Sistema:*\n" +
+    "/start - Mensagem inicial do bot\n" +
+    "/help - Lista todos os comandos\n" +
+    "/ping - Testa se o bot está online\n" +
+    "/cancelar - Cancela o fluxo atual\n";
+
 
     public static string UnknownCommand() =>
         "Não entendi 🤔\nUse /help para ver os comandos disponíveis.";
@@ -32,43 +56,10 @@ public static class BotTexts
             return "Nenhum titular encontrado no banco.";
 
         var sb = new StringBuilder();
-        sb.AppendLine("👥 *Titulares:*\n");
+        sb.AppendLine("👥 **Titulares:**\n");
         foreach (var p in list)
             sb.AppendLine($"• {p.Name}");
 
         return sb.ToString();
-    }
-
-    public static string ChooseInstitution(IEnumerable<Institution> institutions)
-    {
-        var list = institutions.ToList();
-        if (!list.Any())
-            return "Não há instituições cadastradas.";
-
-        var sb = new StringBuilder();
-        sb.AppendLine("🏦 *Escolha a instituição do salário:*\n");
-        for (int i = 0; i < list.Count; i++)
-            sb.AppendLine($"{i + 1}. {list[i].Name}");
-
-        return sb.ToString();
-    }
-
-    public static string AskSalaryAmount(string institutionName) =>
-        $"Informe o valor recebido do salário na instituição *{institutionName}*.\n" +
-        "Ex: 2560,34";
-
-    public static string SalaryReceipt(
-        Institution institution,
-        decimal amount,
-        DateTime date,
-        decimal totalAccumulated)
-    {
-        return
-            "*📄 Comprovante de Recebimento*\n\n" +
-            $"🏦 *Instituição:* {institution.Name}\n" +
-            $"💰 *Valor:* R$ {amount:N2}\n" +
-            $"📅 *Data:* {date:dd/MM/yyyy HH:mm}\n\n" +
-            $"💼 *Total Salário Acumulado:* R$ {totalAccumulated:N2}\n\n" +
-            "✔ Recebimento registrado com sucesso!";
     }
 }

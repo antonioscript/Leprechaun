@@ -75,6 +75,22 @@ public class FinanceTransactionService : IFinanceTransactionService
         return totalIncome - totalOutflow;
     }
 
+    public async Task<DateTime?> GetLastSalaryAccumulatedUpdateAsync(CancellationToken cancellationToken = default)
+    {
+        var all = await _transactionRepository.GetAllAsync(cancellationToken);
+
+        // Mesma lógica de "o que afeta salário acumulado"
+        var relevant = all
+            .Where(t =>
+                (t.TransactionType == "Income" && t.TargetCostCenterId == null) ||
+                ((t.TransactionType == "Expense" || t.TransactionType == "Transfer")
+                 && t.SourceCostCenterId == null))
+            .OrderByDescending(t => t.TransactionDate)
+            .FirstOrDefault();
+
+        return relevant?.TransactionDate;
+    }
+
     // ---------- Operações de negócio ----------
 
     public async Task<FinanceTransaction> RegisterIncomeAsync(
@@ -204,6 +220,41 @@ public class FinanceTransactionService : IFinanceTransactionService
             TransactionDate = date ?? DateTime.UtcNow,
             TransactionType = "Transfer",
             SourceCostCenterId = sourceCostCenterId,
+            TargetCostCenterId = targetCostCenterId,
+            InstitutionId = null,
+            CategoryId = null,
+            Description = description
+        };
+
+        await _transactionRepository.AddAsync(tx, cancellationToken);
+        await _transactionRepository.SaveChangesAsync(cancellationToken);
+
+        return tx;
+    }
+
+    // 👇 NOVO: transferência do salário acumulado para caixinha
+    public async Task<FinanceTransaction> TransferFromSalaryToCostCenterAsync(
+        int personId,
+        int targetCostCenterId,
+        decimal amount,
+        DateTime? date,
+        string? description,
+        CancellationToken cancellationToken = default)
+    {
+        if (amount <= 0)
+            throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be greater than zero.");
+
+        var currentBalance = await GetSalaryAccumulatedAsync(personId, cancellationToken);
+        if (currentBalance < amount)
+            throw new InvalidOperationException("Insufficient salary accumulated balance.");
+
+        var tx = new FinanceTransaction
+        {
+            PersonId = personId,
+            Amount = amount,
+            TransactionDate = date ?? DateTime.UtcNow,
+            TransactionType = "Transfer",
+            SourceCostCenterId = null,              // 👈 sai da liquidez (salário acumulado)
             TargetCostCenterId = targetCostCenterId,
             InstitutionId = null,
             CategoryId = null,

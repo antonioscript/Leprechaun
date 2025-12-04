@@ -3,6 +3,16 @@ using Leprecaun.Infra.Context;
 using Leprecaun.Infra.Repositories;
 using Leprechaun.Application.Services;
 using Leprechaun.Application.Telegram.Flows;
+using Leprechaun.Application.Telegram.Flows.CostCenterBalance;
+using Leprechaun.Application.Telegram.Flows.CostCenterExpense;
+using Leprechaun.Application.Telegram.Flows.CostCenterStatement;
+using Leprechaun.Application.Telegram.Flows.CreateCostCenter;
+using Leprechaun.Application.Telegram.Flows.SalaryAccumulatedInfo;
+using Leprechaun.Application.Telegram.Flows.SalaryExpense;
+using Leprechaun.Application.Telegram.Flows.SalaryIncome;
+using Leprechaun.Application.Telegram.Flows.SalaryStatement;
+using Leprechaun.Application.Telegram.Flows.TransferBetweenCostCenters;
+using Leprechaun.Application.Telegram.Flows.TransferSalaryToCostCenter;
 using Leprechaun.Domain.Interfaces;
 using Leprechaun.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -34,9 +44,10 @@ builder.Services.AddDbContext<LeprechaunDbContext>(options =>
     options.UseNpgsql(connectionString);
 });
 
+
+//Configure
 builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
 builder.Services.AddHttpClient<ITelegramSender, TelegramSender>();
-
 
 //Repositories
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
@@ -58,7 +69,18 @@ builder.Services.AddScoped<IPersonService, PersonService>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
 
 //Flows
-builder.Services.AddScoped<SalaryIncomeFlowService>();
+builder.Services.AddScoped<IChatFlow, SalaryIncomeFlowService>();
+builder.Services.AddScoped<IChatFlow, SalaryAccumulatedInfoFlowService>();
+builder.Services.AddScoped<IChatFlow, CreateCostCenterFlowService>();
+builder.Services.AddScoped<IChatFlow, TransferBetweenCostCentersFlowService>();
+builder.Services.AddScoped<IChatFlow, TransferSalaryToCostCenterFlowService>();
+builder.Services.AddScoped<IChatFlow, CostCenterBalanceFlowService>();
+builder.Services.AddScoped<IChatFlow, SalaryExpenseFlowService>();
+builder.Services.AddScoped<IChatFlow, RegisterCostCenterExpenseFlowService>();
+builder.Services.AddScoped<IChatFlow, CostCenterMonthlyStatementFlowService>();
+builder.Services.AddScoped<IChatFlow, SalaryAccumulatedMonthlyStatementFlowService>();
+
+
 
 var app = builder.Build();
 

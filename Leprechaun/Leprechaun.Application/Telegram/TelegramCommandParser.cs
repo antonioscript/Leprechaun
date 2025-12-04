@@ -24,6 +24,36 @@ public static class TelegramCommandParser
         if (text.StartsWith("/cadastrar_salario", StringComparison.OrdinalIgnoreCase))
             return TelegramCommand.CadastrarSalario;
 
+        if (text.StartsWith("/saldo_salario_acumulado", StringComparison.OrdinalIgnoreCase))
+            return TelegramCommand.SaldoSalarioAcumulado;
+
+        if (text.StartsWith("/criar_caixinha", StringComparison.OrdinalIgnoreCase))
+            return TelegramCommand.CriarCaixinha;
+
+        if (text.StartsWith("/transferir_entre_caixinhas", StringComparison.OrdinalIgnoreCase))
+            return TelegramCommand.TransferirEntreCaixinhas;
+
+        if (text.StartsWith("/transferir_sal_acml_para_caixinha", StringComparison.OrdinalIgnoreCase))
+            return TelegramCommand.TransferirSalAcmlParaCaixinha;
+
+        if (text.StartsWith("/saldo_caixinhas", StringComparison.OrdinalIgnoreCase))
+            return TelegramCommand.SaldoCaixinhas;
+
+        if (text.StartsWith("/registrar_despesa_sal_acml", StringComparison.OrdinalIgnoreCase))
+            return TelegramCommand.RegistrarDespesaSalAcml;
+        
+        if (text.StartsWith("/registrar_despesa_caixinha", StringComparison.OrdinalIgnoreCase))
+            return TelegramCommand.RegistrarDespesaCaixinha;
+
+        if (text.StartsWith("/extrato_caixinha_mes", StringComparison.OrdinalIgnoreCase))
+            return TelegramCommand.ExtratoCaixinhaMes;
+
+        if (text.StartsWith("/extrato_salario_acumulado_mes", StringComparison.OrdinalIgnoreCase))
+            return TelegramCommand.ExtratoSalarioAcumuladoMes;
+
+        if (text.StartsWith("/cancelar", StringComparison.OrdinalIgnoreCase))
+            return TelegramCommand.Cancelar;
+
         return TelegramCommand.Unknown;
     }
 }

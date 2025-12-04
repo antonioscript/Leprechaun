@@ -26,6 +26,20 @@ public class CostCenterService : ICostCenterService
         return costCenter;
     }
 
+    // ?? NOVO: usado pelo fluxo /criar_caixinha
+    public async Task<CostCenter> CreateAsync(string name, int personId, CancellationToken cancellationToken = default)
+    {
+        var costCenter = new CostCenter
+        {
+            Name = name,
+            PersonId = personId,
+            // se sua entity tiver mais campos obrigatórios, pode setar aqui
+            // Ex: CreatedAt = DateTime.UtcNow, IsActive = true, etc.
+        };
+
+        return await CreateAsync(costCenter, cancellationToken);
+    }
+
     public async Task UpdateAsync(CostCenter costCenter, CancellationToken cancellationToken = default)
     {
         _costCenterRepository.Update(costCenter);

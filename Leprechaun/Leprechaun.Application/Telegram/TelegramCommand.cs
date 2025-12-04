@@ -7,5 +7,15 @@ public enum TelegramCommand
     Help,
     Ping,
     Person,
-    CadastrarSalario
+    CadastrarSalario,
+    Cancelar,
+    SaldoSalarioAcumulado,
+    CriarCaixinha,
+    TransferirEntreCaixinhas,
+    TransferirSalAcmlParaCaixinha,
+    SaldoCaixinhas,
+    RegistrarDespesaSalAcml,
+    RegistrarDespesaCaixinha,
+    ExtratoCaixinhaMes,
+    ExtratoSalarioAcumuladoMes
 }

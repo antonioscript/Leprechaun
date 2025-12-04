@@ -162,7 +162,7 @@ public class LeprechaunDbContext : DbContext
             .WithMany()
             .HasForeignKey(e => e.CategoryId);
     });
-    
+
     modelBuilder.Entity<ChatState>(entity =>
     {
         entity.ToTable("chatstate");
@@ -173,9 +173,15 @@ public class LeprechaunDbContext : DbContext
         entity.Property(c => c.State).HasColumnName("state");
         entity.Property(c => c.TempInstitutionId).HasColumnName("tempinstitutionid");
         entity.Property(c => c.TempAmount).HasColumnName("tempamount");
+        entity.Property(c => c.TempCostCenterName).HasColumnName("tempcostcentername");
+
+        entity.Property(c => c.TempPersonId).HasColumnName("temppersonid");
+        entity.Property(c => c.TempSourceCostCenterId).HasColumnName("tempsourcecostcenterid");
+        entity.Property(c => c.TempTargetCostCenterId).HasColumnName("temptargetcostcenterid");
+
         entity.Property(c => c.UpdatedAt).HasColumnName("updatedat");
     });
-    
+
     }
     
     
