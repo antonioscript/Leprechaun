@@ -41,4 +41,19 @@ public class InstitutionService : IInstitutionService
         _institutionRepository.Remove(entity);
         await _institutionRepository.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task<Institution?> DeactivateAsync(int id, DateTime endDate, CancellationToken cancellationToken = default)
+    {
+        var inst = await _institutionRepository.GetByIdAsync(id, cancellationToken);
+        if (inst == null)
+            return null;
+
+        inst.IsActive = false;
+        inst.EndDate = endDate;
+
+        _institutionRepository.Update(inst);
+        await _institutionRepository.SaveChangesAsync(cancellationToken);
+
+        return inst;
+    }
 }

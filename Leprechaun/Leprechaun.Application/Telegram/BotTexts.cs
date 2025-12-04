@@ -6,14 +6,6 @@ namespace Leprechaun.Application.Telegram;
 
 public static class BotTexts
 {
-    public static string Welcome() =>
-        "🍀 Olá! Eu sou o Leprechaun Bot.\n\n" +
-        "Comandos disponíveis:\n" +
-        "/help - Lista os comandos\n" +
-        "/ping - Teste de conexão\n" +
-        "/person - Lista os titulares\n" +
-        "/cadastrar_salario - Registrar recebimento de salário\n";
-
     public static string Start() =>
     "🍀 Olá! Eu sou o Leprechaun Bot.\n\n" +
     "📚 *Comandos disponíveis:*\n\n" +

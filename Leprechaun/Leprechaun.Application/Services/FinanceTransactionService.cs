@@ -232,7 +232,7 @@ public class FinanceTransactionService : IFinanceTransactionService
         return tx;
     }
 
-    // 👇 NOVO: transferência do salário acumulado para caixinha
+    // 👇 Transferência do salário acumulado para caixinha
     public async Task<FinanceTransaction> TransferFromSalaryToCostCenterAsync(
         int personId,
         int targetCostCenterId,
@@ -254,7 +254,7 @@ public class FinanceTransactionService : IFinanceTransactionService
             Amount = amount,
             TransactionDate = date ?? DateTime.UtcNow,
             TransactionType = "Transfer",
-            SourceCostCenterId = null,              // 👈 sai da liquidez (salário acumulado)
+            SourceCostCenterId = null,              // sai da liquidez (salário acumulado)
             TargetCostCenterId = targetCostCenterId,
             InstitutionId = null,
             CategoryId = null,

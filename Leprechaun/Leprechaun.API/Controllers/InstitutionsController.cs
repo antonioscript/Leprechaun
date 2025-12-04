@@ -65,4 +65,21 @@ public class InstitutionsController : ControllerBase
         await _institutionService.DeleteAsync(id, cancellationToken);
         return NoContent();
     }
+
+    // ? Desativar Institution
+    [HttpPut("{id:int}/deactivate")]
+    public async Task<IActionResult> Deactivate(
+        int id,
+        [FromQuery] DateTime? endDate,
+        CancellationToken cancellationToken)
+    {
+        var date = endDate ?? DateTime.UtcNow;
+
+        var updated = await _institutionService.DeactivateAsync(id, date, cancellationToken);
+
+        if (updated is null)
+            return NotFound();
+
+        return Ok(updated);
+    }
 }

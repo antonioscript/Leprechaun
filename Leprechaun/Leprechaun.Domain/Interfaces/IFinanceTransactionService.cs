@@ -4,17 +4,17 @@ namespace Leprechaun.Domain.Interfaces;
 
 public interface IFinanceTransactionService
 {
-    // CRUD básico (se precisar em telas)
+    // ---------- CRUD básico ----------
     Task<List<FinanceTransaction>> GetAllAsync(CancellationToken cancellationToken = default);
     Task<FinanceTransaction?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
 
-    // Operações de negócio principais
+    // ---------- Helpers de saldo ----------
+    Task<decimal> GetSalaryAccumulatedAsync(int personId, CancellationToken cancellationToken = default);
+    Task<decimal> GetCostCenterBalanceAsync(int costCenterId, CancellationToken cancellationToken = default);
+    Task<decimal> GetTotalSalaryAccumulatedAsync(CancellationToken cancellationToken = default);
+    Task<DateTime?> GetLastSalaryAccumulatedUpdateAsync(CancellationToken cancellationToken = default);
 
-    /// <summary>
-    /// Registra uma RECEITA (Income).
-    /// Se targetCostCenterId for null -> entra no salário acumulado.
-    /// Se tiver targetCostCenterId -> entra direto na caixinha.
-    /// </summary>
+    // ---------- Operações de negócio ----------
     Task<FinanceTransaction> RegisterIncomeAsync(
         int personId,
         int institutionId,
@@ -25,10 +25,6 @@ public interface IFinanceTransactionService
         string? description,
         CancellationToken cancellationToken = default);
 
-    /// <summary>
-    /// Registra DESPESA a partir do salário acumulado.
-    /// (Origem = liquidez, não caixinha)
-    /// </summary>
     Task<FinanceTransaction> RegisterExpenseFromSalaryAsync(
         int personId,
         decimal amount,
@@ -37,10 +33,6 @@ public interface IFinanceTransactionService
         string? description,
         CancellationToken cancellationToken = default);
 
-    /// <summary>
-    /// Registra DESPESA a partir de uma caixinha.
-    /// (Origem = CostCenter)
-    /// </summary>
     Task<FinanceTransaction> RegisterExpenseFromCostCenterAsync(
         int personId,
         int costCenterId,
@@ -50,9 +42,6 @@ public interface IFinanceTransactionService
         string? description,
         CancellationToken cancellationToken = default);
 
-    /// <summary>
-    /// Transfere valor de uma caixinha para outra.
-    /// </summary>
     Task<FinanceTransaction> TransferBetweenCostCentersAsync(
         int personId,
         int sourceCostCenterId,
@@ -62,12 +51,7 @@ public interface IFinanceTransactionService
         string? description,
         CancellationToken cancellationToken = default);
 
-    // Helpers de saldo (vamos usar no futuro e no /transacao)
-    Task<decimal> GetSalaryAccumulatedAsync(int personId, CancellationToken cancellationToken = default);
-    Task<decimal> GetCostCenterBalanceAsync(int costCenterId, CancellationToken cancellationToken = default);
-    
-    Task<decimal> GetTotalSalaryAccumulatedAsync(CancellationToken cancellationToken = default);
-
+    // Transferência do salário acumulado para caixinha
     Task<FinanceTransaction> TransferFromSalaryToCostCenterAsync(
         int personId,
         int targetCostCenterId,
@@ -75,9 +59,4 @@ public interface IFinanceTransactionService
         DateTime? date,
         string? description,
         CancellationToken cancellationToken = default);
-
-
-    // última movimentação que afeta o salário acumulado
-    Task<DateTime?> GetLastSalaryAccumulatedUpdateAsync(CancellationToken cancellationToken = default);
-
 }
