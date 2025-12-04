@@ -315,5 +315,10 @@ public class RegisterCostCenterExpenseFlowService : IChatFlow
             chatId,
             reply.ToString(),
             cancellationToken);
+
+        await _telegramSender.SendMessageAsync(
+            chatId,
+            BotTexts.HintAfterCostCenterExpense(),
+            cancellationToken);
     }
 }

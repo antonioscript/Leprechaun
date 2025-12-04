@@ -175,5 +175,10 @@ public class CreateCostCenterFlowService : IChatFlow
             chatId,
             $"✅ Caixinha {costCenter.Name} criada com sucesso!.",
             cancellationToken);
+
+        await _telegramSender.SendMessageAsync(
+            chatId,
+            BotTexts.HintAfterCreateCostCenter(),
+            cancellationToken);
     }
 }

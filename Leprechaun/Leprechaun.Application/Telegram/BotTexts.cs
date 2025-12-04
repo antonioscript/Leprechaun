@@ -38,6 +38,34 @@ public static class BotTexts
     "/cancelar - Cancela o fluxo atual\n";
 
 
+    public static string HintSeeCostCenterReports() =>
+       "💡 Para ver mais informações, você pode usar:\n\n" +
+       "/saldo_caixinhas - Ver o saldo das caixinhas\n" +
+       "/extrato_caixinha_mes - Ver o extrato das caixinhas no mês atual\n";
+
+
+    // 🔹 NOVO: dica específica após registrar despesa na caixinha
+    public static string HintAfterCostCenterExpense() =>
+        "💡 Para continuar, você pode:\n\n" +
+        "/registrar_despesa_caixinha - Registrar outra despesa na caixinha\n" +
+        "/extrato_caixinha_mes - Ver o extrato das despesas da caixinha no mês atual\n";
+
+    public static string HintAfterCreateCostCenter() =>
+        "💡 Agora que a caixinha foi criada, você pode:\n\n" +
+        "/transferir_sal_acml_para_caixinha - Transferir dinheiro do salário acumulado para a nova caixinha\n" +
+        "/transferir_entre_caixinhas - Transferir valor entre caixinhas\n" +
+        "/saldo_caixinhas - Ver o saldo das caixinhas\n";
+
+    public static string HintAfterSalaryExpense() =>
+       "💡 Para registrar outra despesa do salário acumulado, você pode usar:\n\n" +
+       "/registrar_despesa_sal_acml - Registrar outra despesa do salário acumulado\n";
+
+    public static string HintAfterTransferBetweenCostCenters() =>
+        "💡 Para acompanhar suas caixinhas, você pode:\n\n" +
+        "/saldo_caixinhas - Ver o saldo das caixinhas\n" +
+        "/extrato_caixinha_mes - Ver o extrato das caixinhas no mês atual\n" +
+        "/transferir_entre_caixinhas - Fazer outra transferência entre caixinhas\n";
+
     public static string UnknownCommand() =>
         "Não entendi 🤔\nUse /help para ver os comandos disponíveis.";
 

@@ -253,5 +253,11 @@ public class TransferSalaryToCostCenterFlowService : IChatFlow
             chatId,
             "✅ Transferência do salário acumulado para caixinha registrada com sucesso!",
             cancellationToken);
+
+        // 🔹 Mensagem extra sugerindo comandos de relatório
+        await _telegramSender.SendMessageAsync(
+            chatId,
+            BotTexts.HintSeeCostCenterReports(),
+            cancellationToken);
     }
 }

@@ -272,7 +272,7 @@ public class TransferBetweenCostCentersFlowService : IChatFlow
 
         await _telegramSender.SendMessageAsync(
             chatId,
-            "💰 Informe o *valor* a transferir entre as caixinhas. Ex: 2500,00",
+            "💰 Informe o valor a transferir entre as caixinhas. Ex: 2500,00",
             cancellationToken);
     }
 
@@ -328,6 +328,11 @@ public class TransferBetweenCostCentersFlowService : IChatFlow
         await _telegramSender.SendMessageAsync(
             chatId,
             "✅ Transferência entre caixinhas registrada com sucesso!",
+            cancellationToken);
+
+        await _telegramSender.SendMessageAsync(
+            chatId,
+            BotTexts.HintAfterTransferBetweenCostCenters(),
             cancellationToken);
     }
 }

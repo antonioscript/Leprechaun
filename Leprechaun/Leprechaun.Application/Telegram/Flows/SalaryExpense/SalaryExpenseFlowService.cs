@@ -289,6 +289,11 @@ public class SalaryExpenseFlowService : IChatFlow
             chatId,
             reply.ToString(),
             cancellationToken);
+
+        await _telegramSender.SendMessageAsync(
+            chatId,
+            BotTexts.HintAfterSalaryExpense(),
+            cancellationToken);
     }
 
 }
