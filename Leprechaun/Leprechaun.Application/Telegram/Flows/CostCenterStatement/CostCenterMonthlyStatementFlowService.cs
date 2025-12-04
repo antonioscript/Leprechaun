@@ -186,7 +186,7 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
         var persons = await _personService.GetAllAsync(cancellationToken);
         var person = persons.FirstOrDefault(p => p.Id == personId);
 
-        var centers = await _costCenterService.GetAllAsync(cancellationToken);
+        var centers = (await _costCenterService.GetAllAsync(cancellationToken)).ToList();
         var center = centers.FirstOrDefault(c => c.Id == centerId);
 
         if (center is null)
@@ -206,9 +206,10 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
         var now = DateTime.UtcNow;
         var startOfMonth = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
 
-        // Todas as transações e filtragem de despesas da caixinha no mês
+        // Todas as transações e filtragens
         var allTx = await _transactionService.GetAllAsync(cancellationToken);
 
+        // Despesas da caixinha no mês
         var monthExpenses = allTx
             .Where(t =>
                 t.SourceCostCenterId == centerId &&
@@ -218,6 +219,27 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
             .OrderBy(t => t.TransactionDate)
             .ToList();
 
+        // Transferências internas no mês
+        var outgoingTransfers = allTx
+            .Where(t =>
+                t.TransactionType == "Transfer" &&
+                t.SourceCostCenterId == centerId &&
+                t.TransactionDate >= startOfMonth &&
+                t.TransactionDate <= now)
+            .OrderBy(t => t.TransactionDate)
+            .ToList();
+
+        var incomingTransfers = allTx
+            .Where(t =>
+                t.TransactionType == "Transfer" &&
+                t.TargetCostCenterId == centerId &&
+                t.TransactionDate >= startOfMonth &&
+                t.TransactionDate <= now)
+            .OrderBy(t => t.TransactionDate)
+            .ToList();
+
+        var centersById = centers.ToDictionary(c => c.Id, c => c.Name);
+
         var sb = new StringBuilder();
         sb.AppendLine("📊 *Extrato da caixinha (mês atual)*");
         sb.AppendLine($"👤 Titular: *{person?.Name}*");
@@ -226,14 +248,16 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
         sb.AppendLine($"💰 Saldo atual da caixinha: *R$ {balance:N2}*");
         sb.AppendLine();
 
+        // --- DESPESAS ---
+
         if (!monthExpenses.Any())
         {
-            sb.AppendLine("Não há despesas registradas para esta caixinha neste mês.");
+            sb.AppendLine("🧾 *Despesas no mês:*\n");
+            sb.AppendLine("Nenhuma despesa registrada para esta caixinha neste mês.");
         }
         else
         {
-            sb.AppendLine("🧾 *Despesas no mês:*");
-            sb.AppendLine();
+            sb.AppendLine("🧾 *Despesas no mês:*\n");
 
             foreach (var tx in monthExpenses)
             {
@@ -247,9 +271,54 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
                     $"- R$ {tx.Amount:N2} | {desc} | {dateLocal:dd/MM/yyyy}");
             }
 
-            var total = monthExpenses.Sum(t => t.Amount);
+            var totalExpenses = monthExpenses.Sum(t => t.Amount);
             sb.AppendLine();
-            sb.AppendLine($"💸 *Total de despesas no mês:* R$ {total:N2}");
+            sb.AppendLine($"💸 *Total de despesas no mês:* R$ {totalExpenses:N2}");
+        }
+
+        // --- TRANSFERÊNCIAS INTERNAS ---
+
+        if (outgoingTransfers.Any() || incomingTransfers.Any())
+        {
+            sb.AppendLine();
+            sb.AppendLine("🔁 *Transferências internas no mês:*");
+            sb.AppendLine();
+
+            foreach (var tx in outgoingTransfers)
+            {
+                var dateLocal = tx.TransactionDate.ToLocalTime();
+                var targetName = tx.TargetCostCenterId.HasValue &&
+                                 centersById.TryGetValue(tx.TargetCostCenterId.Value, out var nameTarget)
+                    ? nameTarget
+                    : "Salário Acumulado";
+
+                sb.AppendLine(
+                    $"- R$ {tx.Amount:N2} | Transferência *enviada* para caixinha {targetName} | {dateLocal:dd/MM/yyyy}");
+            }
+
+            foreach (var tx in incomingTransfers)
+            {
+                var dateLocal = tx.TransactionDate.ToLocalTime();
+                var sourceName = tx.SourceCostCenterId.HasValue &&
+                                 centersById.TryGetValue(tx.SourceCostCenterId.Value, out var nameSource)
+                    ? nameSource
+                    : "Salário Acumulado";
+
+                sb.AppendLine(
+                    $"- R$ {tx.Amount:N2} | Transferência *recebida* de caixinha {sourceName} | {dateLocal:dd/MM/yyyy}");
+            }
+
+            var totalExpenses = monthExpenses.Sum(t => t.Amount);
+            var totalTransfersOut = outgoingTransfers.Sum(t => t.Amount);
+            var totalTransfersIn = incomingTransfers.Sum(t => t.Amount);
+            var totalOut = totalExpenses + totalTransfersOut;
+
+            sb.AppendLine();
+            sb.AppendLine($"💸 *Total de despesas no mês:* R$ {totalExpenses:N2}");
+            sb.AppendLine($"🔼 *Total transferido para outras caixinhas (saídas):* R$ {totalTransfersOut:N2}");
+            sb.AppendLine($"🔽 *Total recebido de outras caixinhas (entradas):* R$ {totalTransfersIn:N2}");
+            sb.AppendLine();
+            sb.AppendLine($"📉 *Total de saídas (despesas + transferências enviadas):* R$ {totalOut:N2}");
         }
 
         await _telegramSender.SendMessageAsync(

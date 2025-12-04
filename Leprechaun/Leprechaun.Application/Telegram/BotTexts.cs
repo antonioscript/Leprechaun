@@ -15,7 +15,7 @@ public static class BotTexts
         "/cadastrar_salario - Registrar recebimento de salário\n";
 
     public static string Help() =>
-    "📚 **Comandos disponíveis:**\n\n" +
+    "📚 *Comandos disponíveis:*\n\n" +
 
     "*📊 Relatórios:*\n" +
     "/saldo_salario_acumulado - Mostra o total acumulado e divisão por titular\n\n" +
