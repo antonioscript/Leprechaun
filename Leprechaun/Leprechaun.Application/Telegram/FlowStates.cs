@@ -38,5 +38,9 @@ public static class FlowStates
     public const string CostCenterExpenseAwaitingAmount = "CostCenterExpense_AwaitingAmount";
     public const string CostCenterExpenseAwaitingDescription = "CostCenterExpense_AwaitingDescription";
 
+    //fluxo de extrato da caixinha no mês
+    public const string CostCenterStatementAwaitingPerson = "CostCenterStatement_AwaitingPerson";
+    public const string CostCenterStatementAwaitingCenter = "CostCenterStatement_AwaitingCenter";
+
 }
 

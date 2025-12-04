@@ -45,6 +45,9 @@ public static class TelegramCommandParser
         if (text.StartsWith("/registrar_despesa_caixinha", StringComparison.OrdinalIgnoreCase))
             return TelegramCommand.RegistrarDespesaCaixinha;
 
+        if (text.StartsWith("/extrato_caixinha_mes", StringComparison.OrdinalIgnoreCase))
+            return TelegramCommand.ExtratoCaixinhaMes;
+
         if (text.StartsWith("/cancelar", StringComparison.OrdinalIgnoreCase))
             return TelegramCommand.Cancelar;
 

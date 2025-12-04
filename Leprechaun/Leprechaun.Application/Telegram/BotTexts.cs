@@ -15,11 +15,12 @@ public static class BotTexts
         "/cadastrar_salario - Registrar recebimento de salário\n";
 
     public static string Help() =>
-    "📚 *Comandos disponíveis:*\n\n" +
+    "📚 **Comandos disponíveis:**\n\n" +
 
     "*📊 Relatórios:*\n" +
     "/saldo_salario_acumulado - Mostra o total acumulado e divisão por titular\n\n" +
     "/saldo_caixinhas - Mostra o saldo das caixinhas por titular\n\n" +
+    "/extrato_caixinha_mes - Extrato de despesas da caixinha no mês atual\n\n" +
 
     "*💵 Salário Acumulado:*\n" +
     "/transferir_sal_acml_para_caixinha - Transferir do salário acumulado para uma caixinha\n\n" +
