@@ -10,6 +10,7 @@ using Leprechaun.Application.Telegram.Flows.CreateCostCenter;
 using Leprechaun.Application.Telegram.Flows.SalaryAccumulatedInfo;
 using Leprechaun.Application.Telegram.Flows.SalaryExpense;
 using Leprechaun.Application.Telegram.Flows.SalaryIncome;
+using Leprechaun.Application.Telegram.Flows.SalaryStatement;
 using Leprechaun.Application.Telegram.Flows.TransferBetweenCostCenters;
 using Leprechaun.Application.Telegram.Flows.TransferSalaryToCostCenter;
 using Leprechaun.Domain.Interfaces;
@@ -77,6 +78,8 @@ builder.Services.AddScoped<IChatFlow, CostCenterBalanceFlowService>();
 builder.Services.AddScoped<IChatFlow, SalaryExpenseFlowService>();
 builder.Services.AddScoped<IChatFlow, RegisterCostCenterExpenseFlowService>();
 builder.Services.AddScoped<IChatFlow, CostCenterMonthlyStatementFlowService>();
+builder.Services.AddScoped<IChatFlow, SalaryAccumulatedMonthlyStatementFlowService>();
+
 
 
 var app = builder.Build();

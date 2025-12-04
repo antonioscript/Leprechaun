@@ -16,5 +16,6 @@ public enum TelegramCommand
     SaldoCaixinhas,
     RegistrarDespesaSalAcml,
     RegistrarDespesaCaixinha,
-    ExtratoCaixinhaMes
+    ExtratoCaixinhaMes,
+    ExtratoSalarioAcumuladoMes
 }

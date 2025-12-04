@@ -19,8 +19,10 @@ public static class BotTexts
 
     "*📊 Relatórios:*\n" +
     "/saldo_salario_acumulado - Mostra o total acumulado e divisão por titular\n\n" +
+    "/extrato_salario_acumulado_mes - Extrato mensal das saídas do salário acumulado\n\n" +
     "/saldo_caixinhas - Mostra o saldo das caixinhas por titular\n\n" +
     "/extrato_caixinha_mes - Extrato de despesas da caixinha no mês atual\n\n" +
+        
 
     "*💵 Salário Acumulado:*\n" +
     "/transferir_sal_acml_para_caixinha - Transferir do salário acumulado para uma caixinha\n\n" +
