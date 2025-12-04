@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Leprechaun.Application.Services;
 using Leprechaun.Application.Telegram;
 using Leprechaun.Domain.Entities;
 using Leprechaun.Domain.Interfaces;
@@ -11,17 +12,20 @@ public class SalaryAccumulatedMonthlyStatementFlowService : IChatFlow
     private readonly IPersonService _personService;
     private readonly IFinanceTransactionService _transactionService;
     private readonly ITelegramSender _telegramSender;
+    private readonly ICostCenterService _costCenterService;
 
     public SalaryAccumulatedMonthlyStatementFlowService(
         IChatStateService chatStateService,
         IPersonService personService,
         IFinanceTransactionService transactionService,
-        ITelegramSender telegramSender)
+        ITelegramSender telegramSender,
+        ICostCenterService costCenterService)
     {
         _chatStateService = chatStateService;
         _personService = personService;
         _transactionService = transactionService;
         _telegramSender = telegramSender;
+        _costCenterService = costCenterService;
     }
 
     public async Task<bool> TryHandleAsync(
@@ -112,6 +116,8 @@ public class SalaryAccumulatedMonthlyStatementFlowService : IChatFlow
         }
 
         // ---------- TRANSFERÊNCIAS INTERNAS ----------
+        var costCenters = await _costCenterService.GetAllAsync(cancellationToken);
+        var costCenterNames = costCenters.ToDictionary(c => c.Id, c => c.Name);
 
         if (internalTransfers.Any())
         {
@@ -127,12 +133,16 @@ public class SalaryAccumulatedMonthlyStatementFlowService : IChatFlow
 
                 var dateLocal = tx.TransactionDate.ToLocalTime();
 
-                var targetText = tx.TargetCostCenterId.HasValue
-                    ? $"para caixinha Id {tx.TargetCostCenterId.Value}"
-                    : "para caixinha";
+                // Aqui trocamos o ID pelo nome da caixinha ❤️
+                string targetName = "caixinha";
+                if (tx.TargetCostCenterId is int ccId &&
+                    costCenterNames.TryGetValue(ccId, out var ccName))
+                {
+                    targetName = $"caixinha *{ccName}*";
+                }
 
                 sb.AppendLine(
-                    $"- R$ {tx.Amount:N2} | Transferência {targetText} | {personName} | {dateLocal:dd/MM/yyyy}");
+                    $"- R$ {tx.Amount:N2} | Transferência para {targetName} | {personName} | {dateLocal:dd/MM/yyyy}");
             }
 
             var totalTransfers = internalTransfers.Sum(t => t.Amount);
@@ -145,6 +155,7 @@ public class SalaryAccumulatedMonthlyStatementFlowService : IChatFlow
             sb.AppendLine();
             sb.AppendLine($"📉 *Total de saídas do salário acumulado (despesas + transferências):* R$ {totalOut:N2}");
         }
+
 
         await _telegramSender.SendMessageAsync(
             chatId,
