@@ -25,6 +25,10 @@ public static class BotTexts
 
     "*📦 Caixinhas:*\n" +
     "/criar_caixinha - Criar uma nova caixinha\n\n" +
+    "/transferir_entre_caixinhas - Transferir valor entre caixinhas do mesmo titular\n\n" +
+    "/transferir_sal_acml_para_caixinha - Transferir do salário acumulado para uma caixinha\n\n" +
+
+
 
     "*👤 Titulares:*\n" +
     "/person - Lista dos titulares cadastrados\n\n" +

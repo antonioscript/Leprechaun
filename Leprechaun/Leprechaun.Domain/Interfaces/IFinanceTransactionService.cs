@@ -68,6 +68,13 @@ public interface IFinanceTransactionService
     
     Task<decimal> GetTotalSalaryAccumulatedAsync(CancellationToken cancellationToken = default);
 
+    Task<FinanceTransaction> TransferFromSalaryToCostCenterAsync(
+        int personId,
+        int targetCostCenterId,
+        decimal amount,
+        DateTime? date,
+        string? description,
+        CancellationToken cancellationToken = default);
 
 
     // última movimentação que afeta o salário acumulado

@@ -10,5 +10,7 @@ public enum TelegramCommand
     CadastrarSalario,
     Cancelar,
     SaldoSalarioAcumulado,
-    CriarCaixinha
+    CriarCaixinha,
+    TransferirEntreCaixinhas,
+    TransferirSalAcmlParaCaixinha
 }

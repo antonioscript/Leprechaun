@@ -231,4 +231,39 @@ public class FinanceTransactionService : IFinanceTransactionService
 
         return tx;
     }
+
+    // 👇 NOVO: transferência do salário acumulado para caixinha
+    public async Task<FinanceTransaction> TransferFromSalaryToCostCenterAsync(
+        int personId,
+        int targetCostCenterId,
+        decimal amount,
+        DateTime? date,
+        string? description,
+        CancellationToken cancellationToken = default)
+    {
+        if (amount <= 0)
+            throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be greater than zero.");
+
+        var currentBalance = await GetSalaryAccumulatedAsync(personId, cancellationToken);
+        if (currentBalance < amount)
+            throw new InvalidOperationException("Insufficient salary accumulated balance.");
+
+        var tx = new FinanceTransaction
+        {
+            PersonId = personId,
+            Amount = amount,
+            TransactionDate = date ?? DateTime.UtcNow,
+            TransactionType = "Transfer",
+            SourceCostCenterId = null,              // 👈 sai da liquidez (salário acumulado)
+            TargetCostCenterId = targetCostCenterId,
+            InstitutionId = null,
+            CategoryId = null,
+            Description = description
+        };
+
+        await _transactionRepository.AddAsync(tx, cancellationToken);
+        await _transactionRepository.SaveChangesAsync(cancellationToken);
+
+        return tx;
+    }
 }
