@@ -14,5 +14,6 @@ public enum TelegramCommand
     TransferirEntreCaixinhas,
     TransferirSalAcmlParaCaixinha,
     SaldoCaixinhas,
-    RegistrarDespesaSalAcml
+    RegistrarDespesaSalAcml,
+    RegistrarDespesaCaixinha
 }

@@ -30,5 +30,13 @@ public static class FlowStates
     public const string SalaryExpenseAwaitingPerson = "SalaryExpense_AwaitingPerson";
     public const string SalaryExpenseAwaitingAmount = "SalaryExpense_AwaitingAmount";
     public const string SalaryExpenseAwaitingDescription = "SalaryExpense_AwaitingDescription";
+
+
+    //Fluxo registrar despesa caixinha
+    public const string CostCenterExpenseAwaitingPerson = "CostCenterExpense_AwaitingPerson";
+    public const string CostCenterExpenseAwaitingCenter = "CostCenterExpense_AwaitingCenter";
+    public const string CostCenterExpenseAwaitingAmount = "CostCenterExpense_AwaitingAmount";
+    public const string CostCenterExpenseAwaitingDescription = "CostCenterExpense_AwaitingDescription";
+
 }
 

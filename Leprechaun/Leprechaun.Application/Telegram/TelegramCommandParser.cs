@@ -41,6 +41,9 @@ public static class TelegramCommandParser
 
         if (text.StartsWith("/registrar_despesa_sal_acml", StringComparison.OrdinalIgnoreCase))
             return TelegramCommand.RegistrarDespesaSalAcml;
+        
+        if (text.StartsWith("/registrar_despesa_caixinha", StringComparison.OrdinalIgnoreCase))
+            return TelegramCommand.RegistrarDespesaCaixinha;
 
         if (text.StartsWith("/cancelar", StringComparison.OrdinalIgnoreCase))
             return TelegramCommand.Cancelar;

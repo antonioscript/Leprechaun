@@ -29,6 +29,8 @@ public static class BotTexts
     "*📦 Caixinhas:*\n" +
     "/criar_caixinha - Criar uma nova caixinha\n\n" +
     "/transferir_entre_caixinhas - Transferir valor entre caixinhas do mesmo titular\n\n" +
+    "/registrar_despesa_caixinha - Registrar uma despesa retirada de uma caixinha\n\n" +
+
 
     "*💰 Renda:*\n" +
     "/cadastrar_salario - Fluxo para registrar o recebimento do salário\n\n" +
