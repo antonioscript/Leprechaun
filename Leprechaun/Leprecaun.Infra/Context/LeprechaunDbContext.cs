@@ -173,6 +173,7 @@ public class LeprechaunDbContext : DbContext
         entity.Property(c => c.State).HasColumnName("state");
         entity.Property(c => c.TempInstitutionId).HasColumnName("tempinstitutionid");
         entity.Property(c => c.TempAmount).HasColumnName("tempamount");
+        entity.Property(c => c.TempCostCenterName).HasColumnName("tempcostcentername");
         entity.Property(c => c.UpdatedAt).HasColumnName("updatedat");
     });
     

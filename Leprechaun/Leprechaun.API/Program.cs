@@ -3,6 +3,7 @@ using Leprecaun.Infra.Context;
 using Leprecaun.Infra.Repositories;
 using Leprechaun.Application.Services;
 using Leprechaun.Application.Telegram.Flows;
+using Leprechaun.Application.Telegram.Flows.CreateCostCenter;
 using Leprechaun.Application.Telegram.Flows.SalaryAccumulatedInfo;
 using Leprechaun.Application.Telegram.Flows.SalaryIncome;
 using Leprechaun.Domain.Interfaces;
@@ -41,7 +42,6 @@ builder.Services.AddDbContext<LeprechaunDbContext>(options =>
 builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
 builder.Services.AddHttpClient<ITelegramSender, TelegramSender>();
 
-
 //Repositories
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 builder.Services.AddScoped<IInstitutionRepository, InstitutionRepository>();
@@ -63,7 +63,9 @@ builder.Services.AddScoped<IExpenseService, ExpenseService>();
 
 //Flows
 builder.Services.AddScoped<IChatFlow, SalaryIncomeFlowService>();
-builder.Services.AddScoped<IChatFlow, SalaryAccumulatedInfoFlowService>(); 
+builder.Services.AddScoped<IChatFlow, SalaryAccumulatedInfoFlowService>();
+builder.Services.AddScoped<IChatFlow, CreateCostCenterFlowService>();
+
 
 
 var app = builder.Build();

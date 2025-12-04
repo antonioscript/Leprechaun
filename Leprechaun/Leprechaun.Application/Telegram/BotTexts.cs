@@ -15,13 +15,26 @@ public static class BotTexts
         "/cadastrar_salario - Registrar recebimento de salário\n";
 
     public static string Help() =>
-        "📚 **Comandos disponíveis:**\n\n" +
-        "/start - Mensagem de boas-vindas\n" +
-        "/help - Lista os comandos\n" +
-        "/ping - Testa se o bot está online\n" +
-        "/person - Lista os titulares da conta\n" +
-        "/cadastrar_salario - Fluxo para registrar o recebimento do salário\n" +
-        "/saldo_salario_acumulado - Valor total do salario acumulado\n";
+    "📚 *Comandos disponíveis:*\n\n" +
+
+    "*📊 Relatórios:*\n" +
+    "/saldo_salario_acumulado - Mostra o total acumulado e contribuição por titular\n\n" +
+
+    "*💰 Renda:*\n" +
+    "/cadastrar_salario - Fluxo para registrar o recebimento do salário\n\n" +
+
+    "*📦 Caixinhas:*\n" +
+    "/criar_caixinha - Criar uma nova caixinha\n\n" +
+
+    "*👤 Titulares:*\n" +
+    "/person - Lista dos titulares cadastrados\n\n" +
+
+    "*⚙️ Sistema:*\n" +
+    "/start - Mensagem inicial do bot\n" +
+    "/help - Lista todos os comandos\n" +
+    "/ping - Testa se o bot está online\n" +
+    "/cancelar - Cancela o fluxo atual\n";
+
 
     public static string UnknownCommand() =>
         "Não entendi 🤔\nUse /help para ver os comandos disponíveis.";

@@ -9,5 +9,6 @@ public enum TelegramCommand
     Person,
     CadastrarSalario,
     Cancelar,
-    SaldoSalarioAcumulado
+    SaldoSalarioAcumulado,
+    CriarCaixinha
 }
