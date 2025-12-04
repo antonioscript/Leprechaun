@@ -22,4 +22,13 @@ public static class FlowStates
     public const string SalaryToCostCenterAwaitingPerson = "SalaryToCostCenter_AwaitingPerson";
     public const string SalaryToCostCenterAwaitingTarget = "SalaryToCostCenter_AwaitingTarget";
     public const string SalaryToCostCenterAwaitingAmount = "SalaryToCostCenter_AwaitingAmount";
+
+    //fluxo de saldo de caixinhas
+    public const string CostCenterBalanceAwaitingPerson = "CostCenterBalance_AwaitingPerson";
+
+    // fluxo de registrar despesa do salário acumulado
+    public const string SalaryExpenseAwaitingPerson = "SalaryExpense_AwaitingPerson";
+    public const string SalaryExpenseAwaitingAmount = "SalaryExpense_AwaitingAmount";
+    public const string SalaryExpenseAwaitingDescription = "SalaryExpense_AwaitingDescription";
 }
+

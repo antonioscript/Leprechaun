@@ -12,5 +12,7 @@ public enum TelegramCommand
     SaldoSalarioAcumulado,
     CriarCaixinha,
     TransferirEntreCaixinhas,
-    TransferirSalAcmlParaCaixinha
+    TransferirSalAcmlParaCaixinha,
+    SaldoCaixinhas,
+    RegistrarDespesaSalAcml
 }
