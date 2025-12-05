@@ -89,7 +89,15 @@ public static class BotTexts
 
 
     public static string VersionNote() =>
-        "";
+    "🟩 Release Notes — Versão 1.1.0\n\n" +
+    "Novas Features 🚀\n" +
+    "• Novo comando /patrimonio que lista o patrimônio total, incluindo salário acumulado, caixinhas e divisão por titular.\n" +
+    "• Novo comando /sugerir_feature para criar e enviar sugestões de novas funcionalidades.\n" +
+    "• Novo comando /listar_features para visualizar todas as features sugeridas.\n\n" +
+    "Versão: 1.1.0\n" +
+    "— Leprechaun Bot";
+
+
 
     public static string UnknownCommand() =>
         "Não entendi 🤔\nUse /help para ver os comandos disponíveis.";
