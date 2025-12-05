@@ -17,5 +17,10 @@ public enum TelegramCommand
     RegistrarDespesaSalAcml,
     RegistrarDespesaCaixinha,
     ExtratoCaixinhaMes,
-    ExtratoSalarioAcumuladoMes
+    ExtratoSalarioAcumuladoMes,
+    SugerirFeature,
+    ListarFeatures,
+    Patrimonio,
+    Imagem,
+    Version
 }

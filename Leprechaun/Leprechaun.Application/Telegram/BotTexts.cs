@@ -11,6 +11,7 @@ public static class BotTexts
     "📚 Comandos disponíveis:\n\n" +
 
     "📊 Relatórios:\n" +
+    "/patrimonio - Mostra o patrimônio total (salário acumulado + caixinhas)\n\n" +
     "/saldo_salario_acumulado - Mostra o total acumulado e divisão por titular\n\n" +
     "/extrato_salario_acumulado_mes - Extrato mensal das saídas do salário acumulado\n\n" +
     "/saldo_caixinhas - Mostra o saldo das caixinhas por titular\n\n" +
@@ -31,6 +32,10 @@ public static class BotTexts
     "💰 Renda:\n" +
     "/cadastrar_salario - Fluxo para registrar o recebimento do salário\n\n" +
 
+
+    "📢 Suporte:\n" +
+    "/sugerir_feature - Sugesrir Ideias de Novas Features\n\n" +
+    "/listar_features - Listar Features Cadastradas\n\n" +
 
     "⚙️ Sistema:\n" +
     "/start - Mensagem inicial do bot\n" +
@@ -65,6 +70,34 @@ public static class BotTexts
         "/saldo_caixinhas - Ver o saldo das caixinhas\n" +
         "/extrato_caixinha_mes - Ver o extrato das caixinhas no mês atual\n" +
         "/transferir_entre_caixinhas - Fazer outra transferência entre caixinhas\n";
+
+    public static string HintAfterSuggestion(long id) =>
+    $"🎉 Obrigado pela sua sugestão! \n\n" +
+    $"📝 Ela foi registrada com o código: #{id}\n" +
+    $"💾 Agora ela já faz parte da lista de melhorias do Leprechaun.\n\n" +
+    $"Se quiser continuar contribuindo:\n" +
+    $"• Envie outra sugestão usando /sugerir_feature\n" +
+    $"• Veja todas as sugestões com /listar_features\n\n" +
+    $"🍀 Obrigado por ajudar o Leprechaun Finance a ficar cada vez melhor!";
+
+
+    public static string FormatSuggestionListHeader() =>
+        "📝 Últimas sugestões registradas:\n";
+
+    public static string NoSuggestions() =>
+        "Ainda não há sugestões registradas.";
+
+
+    public static string VersionNote() =>
+    "🟩 Release Notes — Versão 1.1.0\n\n" +
+    "Novas Features 🚀\n" +
+    "• Novo comando /patrimonio que lista o patrimônio total, incluindo salário acumulado, caixinhas e divisão por titular.\n" +
+    "• Novo comando /sugerir_feature para criar e enviar sugestões de novas funcionalidades.\n" +
+    "• Novo comando /listar_features para visualizar todas as features sugeridas.\n\n" +
+    "Versão: 1.1.0\n" +
+    "— Leprechaun Bot";
+
+
 
     public static string UnknownCommand() =>
         "Não entendi 🤔\nUse /help para ver os comandos disponíveis.";

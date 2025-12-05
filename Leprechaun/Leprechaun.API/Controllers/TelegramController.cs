@@ -166,7 +166,21 @@ public class TelegramController : ControllerBase
                     cancellationToken);
                 return true;
 
-            
+            case TelegramCommand.Imagem:
+                await _telegramSender.SendPhotoAsync(
+                    chatId: chatId,
+                    filePath: "C:\\Users\\Antônio Rocha\\Documents\\Leprechaun\\Logo.png",
+                    caption: null,
+                    cancellationToken: cancellationToken);
+                return true;
+
+            case TelegramCommand.Version:
+                await _telegramSender.SendMessageAsync(
+                    chatId,
+                    BotTexts.VersionNote(),
+                    cancellationToken);
+                return true;
+
             default:
                 return false;
         }

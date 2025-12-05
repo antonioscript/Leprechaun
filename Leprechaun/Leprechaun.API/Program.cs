@@ -7,10 +7,12 @@ using Leprechaun.Application.Telegram.Flows.CostCenterBalance;
 using Leprechaun.Application.Telegram.Flows.CostCenterExpense;
 using Leprechaun.Application.Telegram.Flows.CostCenterStatement;
 using Leprechaun.Application.Telegram.Flows.CreateCostCenter;
+using Leprechaun.Application.Telegram.Flows.Patrimony;
 using Leprechaun.Application.Telegram.Flows.SalaryAccumulatedInfo;
 using Leprechaun.Application.Telegram.Flows.SalaryExpense;
 using Leprechaun.Application.Telegram.Flows.SalaryIncome;
 using Leprechaun.Application.Telegram.Flows.SalaryStatement;
+using Leprechaun.Application.Telegram.Flows.SupportSuggestion;
 using Leprechaun.Application.Telegram.Flows.TransferBetweenCostCenters;
 using Leprechaun.Application.Telegram.Flows.TransferSalaryToCostCenter;
 using Leprechaun.Domain.Interfaces;
@@ -32,7 +34,7 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "Leprechaun.API",
-        Version = "7",
+        Version = "1",
     });
 });
 
@@ -58,6 +60,8 @@ builder.Services.AddScoped<IFinanceTransactionRepository, FinanceTransactionRepo
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 builder.Services.AddScoped<IChatStateRepository, ChatStateRepository>();
 builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
+builder.Services.AddScoped<ISupportSuggestionRepository, SupportSuggestionRepository>();
+
 
 //Servcies
 builder.Services.AddScoped<IChatStateService, ChatStateService>();
@@ -67,6 +71,8 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IFinanceTransactionService, FinanceTransactionService>();
 builder.Services.AddScoped<IPersonService, PersonService>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
+builder.Services.AddScoped<ISupportSuggestionService, SupportSuggestionService>();
+
 
 //Flows
 builder.Services.AddScoped<IChatFlow, SalaryIncomeFlowService>();
@@ -79,7 +85,8 @@ builder.Services.AddScoped<IChatFlow, SalaryExpenseFlowService>();
 builder.Services.AddScoped<IChatFlow, RegisterCostCenterExpenseFlowService>();
 builder.Services.AddScoped<IChatFlow, CostCenterMonthlyStatementFlowService>();
 builder.Services.AddScoped<IChatFlow, SalaryAccumulatedMonthlyStatementFlowService>();
-
+builder.Services.AddScoped<IChatFlow, SupportSuggestionFlowService>();
+builder.Services.AddScoped<IChatFlow, PatrimonyFlowService>();
 
 
 var app = builder.Build();
