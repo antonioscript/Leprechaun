@@ -22,7 +22,6 @@ public enum TelegramCommand
     ListarFeatures,
     Patrimonio,
     Imagem,
-    Version
-    ExtratoSalarioAcumuladoMes,
+    Version,
     Producao
 }
