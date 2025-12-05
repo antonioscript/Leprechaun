@@ -19,5 +19,6 @@ public enum TelegramCommand
     ExtratoCaixinhaMes,
     ExtratoSalarioAcumuladoMes,
     SugerirFeature,
-    ListarFeatures
+    ListarFeatures,
+    Patrimonio
 }

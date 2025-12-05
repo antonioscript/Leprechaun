@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿// Leprechaun.Application/Telegram/Flows/SupportSuggestion/SupportSuggestionFlowService.cs
+using System.Text;
 using Leprechaun.Application.Telegram;
 using Leprechaun.Domain.Entities;
 using Leprechaun.Domain.Interfaces;
@@ -28,27 +29,35 @@ public class SupportSuggestionFlowService : IChatFlow
         TelegramCommand command,
         CancellationToken cancellationToken)
     {
-        // 1) Se já estamos no fluxo de sugestão, processar a descrição
+        // 1) Continuação do fluxo de sugestão
         if (state.State == FlowStates.SupportSuggestionAwaitingDescription)
         {
             await HandleDescriptionAsync(chatId, userText, state, cancellationToken);
             return true;
         }
 
-        // 2) Se é o comando /sugerir_feature, iniciar o fluxo
+        // 2) Início do fluxo /sugerir_feature
         if (command == TelegramCommand.SugerirFeature)
         {
-            await StartFlowAsync(chatId, state, cancellationToken);
+            await StartSuggestionFlowAsync(chatId, state, cancellationToken);
             return true;
         }
 
-        // 3) Não é com esse fluxo
+        // 3) Listagem /listar_features (sem estado)
+        if (command == TelegramCommand.ListarFeatures)
+        {
+            await HandleListAsync(chatId, cancellationToken);
+            return true;
+        }
+
+        // 4) Não é responsabilidade deste fluxo
         return false;
     }
 
-    // ----------- INÍCIO DO FLUXO -----------
-
-    private async Task StartFlowAsync(
+    // ============================
+    //  /sugerir_feature
+    // ============================
+    private async Task StartSuggestionFlowAsync(
         long chatId,
         ChatState state,
         CancellationToken cancellationToken)
@@ -62,8 +71,6 @@ public class SupportSuggestionFlowService : IChatFlow
         sb.AppendLine("💡 Sugestão de melhoria / nova feature");
         sb.AppendLine();
         sb.AppendLine("Escreva sua sugestão em uma mensagem única.");
-        sb.AppendLine("Exemplo:");
-        sb.AppendLine("_\"Criar um comando para ver o extrato de todas as caixinhas em uma única tela\"_");
 
         await _telegramSender.SendMessageAsync(
             chatId,
@@ -71,13 +78,11 @@ public class SupportSuggestionFlowService : IChatFlow
             cancellationToken);
     }
 
-    // ----------- DESCRIÇÃO DA SUGESTÃO -----------
-
     private async Task HandleDescriptionAsync(
-    long chatId,
-    string userText,
-    ChatState state,
-    CancellationToken cancellationToken)
+        long chatId,
+        string userText,
+        ChatState state,
+        CancellationToken cancellationToken)
     {
         var description = userText?.Trim();
 
@@ -90,7 +95,7 @@ public class SupportSuggestionFlowService : IChatFlow
             return;
         }
 
-        // Salva a sugestão e recebe o objeto com o Id
+        // Salva a sugestão e pega o Id
         var suggestion = await _supportSuggestionService.CreateAsync(
             chatId,
             description,
@@ -99,11 +104,54 @@ public class SupportSuggestionFlowService : IChatFlow
         // Limpa o estado do fluxo
         await _chatStateService.ClearAsync(chatId, cancellationToken);
 
-        // Mensagem de agradecimento + dica de próximos passos
+        // Mensagem de agradecimento / próximos passos
         await _telegramSender.SendMessageAsync(
             chatId,
             BotTexts.HintAfterSuggestion(suggestion.Id),
             cancellationToken);
     }
 
+    // ============================
+    //  /listar_features
+    // ============================
+    private async Task HandleListAsync(
+        long chatId,
+        CancellationToken cancellationToken)
+    {
+        var suggestions = await _supportSuggestionService.GetAllAsync(cancellationToken);
+
+        if (suggestions == null || suggestions.Count == 0)
+        {
+            await _telegramSender.SendMessageAsync(
+                chatId,
+                BotTexts.NoSuggestions(),
+                cancellationToken);
+            return;
+        }
+
+        // Vamos mostrar, por exemplo, as últimas 10
+        var latest = suggestions
+            .OrderByDescending(s => s.CreatedAt)
+            .Take(10)
+            .ToList();
+
+        var sb = new StringBuilder();
+        sb.AppendLine(BotTexts.FormatSuggestionListHeader());
+        sb.AppendLine();
+
+        foreach (var s in latest)
+        {
+            var dateLocal = s.CreatedAt.ToLocalTime();
+
+            sb.AppendLine(
+                $"• #{s.Id} | {s.Status} | {dateLocal:dd/MM/yyyy HH:mm}");
+            sb.AppendLine($"  {s.Description}");
+            sb.AppendLine();
+        }
+
+        await _telegramSender.SendMessageAsync(
+            chatId,
+            sb.ToString(),
+            cancellationToken);
+    }
 }

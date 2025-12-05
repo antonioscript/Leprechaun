@@ -11,6 +11,7 @@ public static class BotTexts
     "📚 Comandos disponíveis:\n\n" +
 
     "📊 Relatórios:\n" +
+    "/patrimonio - Mostra o patrimônio total, salário acumulado + caixinhas\n\n" +
     "/saldo_salario_acumulado - Mostra o total acumulado e divisão por titular\n\n" +
     "/extrato_salario_acumulado_mes - Extrato mensal das saídas do salário acumulado\n\n" +
     "/saldo_caixinhas - Mostra o saldo das caixinhas por titular\n\n" +
@@ -33,8 +34,8 @@ public static class BotTexts
 
 
     "📢 Suporte:\n" +
-    "/sugerir_feature - Sugesrir Ideias de Novas Features\n" +
-    "/listar_features - Listar Features Cadastradas\n" +
+    "/sugerir_feature - Sugesrir Ideias de Novas Features\n\n" +
+    "/listar_features - Listar Features Cadastradas\n\n" +
 
     "⚙️ Sistema:\n" +
     "/start - Mensagem inicial do bot\n" +
