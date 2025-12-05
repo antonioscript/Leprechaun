@@ -183,37 +183,36 @@ public class LeprechaunDbContext : DbContext
         entity.Property(c => c.UpdatedAt).HasColumnName("updatedat");
     });
 
-        modelBuilder.Entity<SupportSuggestion>(entity =>
-        {
-            entity.ToTable("SupportSuggestion");
+    modelBuilder.Entity<SupportSuggestion>(entity =>
+    {
+        // sua tabela SQL: CREATE TABLE SupportSuggestion (...)
+        // Em Postgres, isso vira "supportsuggestion" em minúsculo.
+        entity.ToTable("supportsuggestion");
 
-            entity.HasKey(e => e.Id);
+        entity.HasKey(s => s.Id);
 
-            entity.Property(e => e.Id)
-                .HasColumnName("Id");
+        entity.Property(s => s.Id)
+            .HasColumnName("id");
 
-            entity.Property(e => e.Description)
-                .IsRequired()
-                .HasMaxLength(1000)
-                .HasColumnName("Description");
+        entity.Property(s => s.Description)
+            .HasColumnName("description")
+            .HasMaxLength(1000)
+            .IsRequired();
 
-            entity.Property(e => e.CreatedAt)
-                .IsRequired()
-                .HasColumnName("CreatedAt");
+        entity.Property(s => s.CreatedAt)
+            .HasColumnName("createdat");
 
-            entity.Property(e => e.ChatId)
-                .HasColumnName("ChatId");
+        entity.Property(s => s.ChatId)
+            .HasColumnName("chatid");
 
-            entity.Property(e => e.Source)
-                .IsRequired()
-                .HasMaxLength(50)
-                .HasColumnName("Source");
+        entity.Property(s => s.Source)
+            .HasColumnName("source")
+            .HasMaxLength(50);
 
-            entity.Property(e => e.Status)
-                .IsRequired()
-                .HasMaxLength(20)
-                .HasColumnName("Status");
-        });
+        entity.Property(s => s.Status)
+            .HasColumnName("status")
+            .HasMaxLength(20);
+    });
 
 
     }
