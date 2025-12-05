@@ -89,8 +89,10 @@ public class PatrimonyFlowService : IChatFlow
         // --- Salário por titular ---
         sb.AppendLine("👤 Salário acumulado por titular:");
         foreach (var (name, balance) in salaryPerPerson)
+        {
             sb.AppendLine($"- {name}: R$ {balance:N2}");
-            sb.AppendLine($"- {name}: R$ {balance:N2}");
+        }
+            
 
         sb.AppendLine();
 
