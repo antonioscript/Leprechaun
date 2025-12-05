@@ -21,7 +21,7 @@ A magical .NET 8 Telegram bot that helps track and organize shared financial inp
 https://c2w4peqtjzmmvdbfrxcqra3zf40qnmnq.lambda-url.us-east-1.on.aws/swagger/index.html
 
 ## Versão de Desenvolvimento
-
+https://octnugx5mj25daebv2wvedkbku0ktaoh.lambda-url.us-east-1.on.aws/swagger/index.html
 
 
 ## ✨ Overview
