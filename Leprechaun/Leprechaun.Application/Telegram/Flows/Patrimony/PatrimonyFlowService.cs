@@ -79,43 +79,44 @@ public class PatrimonyFlowService : IChatFlow
         var totalPatrimony = totalSalaryAccumulated + totalCostCenters;
 
         var sb = new StringBuilder();
-        sb.AppendLine("🏦 *Visão geral do patrimônio atual*");
+        sb.AppendLine("🏦 Visão geral do patrimônio atual");
         sb.AppendLine();
 
         // --- Salário acumulado total ---
-        sb.AppendLine($"💰 *Salário acumulado total:* R$ {totalSalaryAccumulated:N2}");
+        sb.AppendLine($"💰 Salário acumulado total: R$ {totalSalaryAccumulated:N2}");
         sb.AppendLine();
 
         // --- Salário por titular ---
-        sb.AppendLine("👤 *Salário acumulado por titular:*");
+        sb.AppendLine("👤 Salário acumulado por titular:");
         foreach (var (name, balance) in salaryPerPerson)
-            sb.AppendLine($"- {name}: *R$ {balance:N2}*");
+            sb.AppendLine($"- {name}: R$ {balance:N2}");
+            sb.AppendLine($"- {name}: R$ {balance:N2}");
 
         sb.AppendLine();
 
         // --- Caixinhas ---
         if (costCenterBalances.Count == 0)
         {
-            sb.AppendLine("📦 *Caixinhas:*\n");
+            sb.AppendLine("📦 Caixinhas:\n");
             sb.AppendLine("Nenhuma caixinha cadastrada ainda.");
         }
         else
         {
-            sb.AppendLine("📦 *Caixinhas:*");
+            sb.AppendLine("📦 Caixinhas:");
             sb.AppendLine();
 
             foreach (var (name, balance, owner) in costCenterBalances)
             {
-                sb.AppendLine($"- {name} (*{owner}*): *R$ {balance:N2}*");
+                sb.AppendLine($"- {name} ({owner}): R$ {balance:N2}");
             }
 
             sb.AppendLine();
-            sb.AppendLine($"📦 *Total em caixinhas:* R$ {totalCostCenters:N2}");
+            sb.AppendLine($"📦 Total em caixinhas: R$ {totalCostCenters:N2}");
         }
 
         sb.AppendLine();
-        sb.AppendLine("📊 *Patrimônio total (salário + caixinhas):*");
-        sb.AppendLine($"➡️ *R$ {totalPatrimony:N2}*");
+        sb.AppendLine("📊 Patrimônio total (salário + caixinhas):");
+        sb.AppendLine($"➡️ R$ {totalPatrimony:N2}");
 
         await _telegramSender.SendMessageAsync(
             chatId,
