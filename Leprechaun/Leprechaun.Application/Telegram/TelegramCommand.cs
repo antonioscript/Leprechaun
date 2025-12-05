@@ -18,5 +18,11 @@ public enum TelegramCommand
     RegistrarDespesaCaixinha,
     ExtratoCaixinhaMes,
     ExtratoSalarioAcumuladoMes,
+    SugerirFeature,
+    ListarFeatures,
+    Patrimonio,
+    Imagem,
+    Version
+    ExtratoSalarioAcumuladoMes,
     Producao
 }

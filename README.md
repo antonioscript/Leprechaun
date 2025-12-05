@@ -15,6 +15,15 @@ A magical .NET 8 Telegram bot that helps track and organize shared financial inp
 
 ---
 
+
+## Versão de Produção
+
+https://c2w4peqtjzmmvdbfrxcqra3zf40qnmnq.lambda-url.us-east-1.on.aws/swagger/index.html
+
+## Versão de Desenvolvimento
+https://octnugx5mj25daebv2wvedkbku0ktaoh.lambda-url.us-east-1.on.aws/swagger/index.html
+
+
 ## ✨ Overview
 
 **Leprechaun Finance** is a lightweight, fun, and practical financial assistant.  
@@ -22,7 +31,6 @@ It sends scheduled messages, collects values from users, stores structured data,
 
 Perfect for couples, families, or small groups who need a simple way to track recurring payments or income updates.
 
-https://c2w4peqtjzmmvdbfrxcqra3zf40qnmnq.lambda-url.us-east-1.on.aws/swagger/index.html
 
 ## 🖼️ Logo
 

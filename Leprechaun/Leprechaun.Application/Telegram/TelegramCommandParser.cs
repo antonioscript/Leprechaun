@@ -51,11 +51,23 @@ public static class TelegramCommandParser
         if (text.StartsWith("/extrato_salario_acumulado_mes", StringComparison.OrdinalIgnoreCase))
             return TelegramCommand.ExtratoSalarioAcumuladoMes;
 
-        if (text.StartsWith("/producao", StringComparison.OrdinalIgnoreCase))
-            return TelegramCommand.Producao;
+        if (text.StartsWith("/sugerir_feature", StringComparison.OrdinalIgnoreCase))
+            return TelegramCommand.SugerirFeature;
+
+        if (text.StartsWith("/listar_features", StringComparison.OrdinalIgnoreCase))
+            return TelegramCommand.ListarFeatures;
+
+        if (text.StartsWith("/patrimonio", StringComparison.OrdinalIgnoreCase))
+            return TelegramCommand.Patrimonio;
+
+        if (text.StartsWith("/imagem", StringComparison.OrdinalIgnoreCase))
+            return TelegramCommand.Imagem;
 
         if (text.StartsWith("/cancelar", StringComparison.OrdinalIgnoreCase))
             return TelegramCommand.Cancelar;
+
+        if (text.StartsWith("/version", StringComparison.OrdinalIgnoreCase))
+            return TelegramCommand.Version;
 
         return TelegramCommand.Unknown;
     }

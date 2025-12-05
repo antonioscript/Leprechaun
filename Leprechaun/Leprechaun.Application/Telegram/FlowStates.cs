@@ -42,5 +42,10 @@ public static class FlowStates
     public const string CostCenterStatementAwaitingPerson = "CostCenterStatement_AwaitingPerson";
     public const string CostCenterStatementAwaitingCenter = "CostCenterStatement_AwaitingCenter";
 
+    //Sugestões
+    public const string SupportSuggestionAwaitingDescription = "SupportSuggestionAwaitingDescription";
+
+
+
 }
 

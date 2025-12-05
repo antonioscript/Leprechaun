@@ -18,6 +18,7 @@ public class LeprechaunDbContext : DbContext
     public DbSet<Expense> Expenses => Set<Expense>();
     
     public DbSet<ChatState> ChatStates { get; set; }
+    public DbSet<SupportSuggestion> SupportSuggestions { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -182,7 +183,39 @@ public class LeprechaunDbContext : DbContext
         entity.Property(c => c.UpdatedAt).HasColumnName("updatedat");
     });
 
+    modelBuilder.Entity<SupportSuggestion>(entity =>
+    {
+        // sua tabela SQL: CREATE TABLE SupportSuggestion (...)
+        // Em Postgres, isso vira "supportsuggestion" em minúsculo.
+        entity.ToTable("supportsuggestion");
+
+        entity.HasKey(s => s.Id);
+
+        entity.Property(s => s.Id)
+            .HasColumnName("id");
+
+        entity.Property(s => s.Description)
+            .HasColumnName("description")
+            .HasMaxLength(1000)
+            .IsRequired();
+
+        entity.Property(s => s.CreatedAt)
+            .HasColumnName("createdat");
+
+        entity.Property(s => s.ChatId)
+            .HasColumnName("chatid");
+
+        entity.Property(s => s.Source)
+            .HasColumnName("source")
+            .HasMaxLength(50);
+
+        entity.Property(s => s.Status)
+            .HasColumnName("status")
+            .HasMaxLength(20);
+    });
+
+
     }
-    
-    
+
+
 }
