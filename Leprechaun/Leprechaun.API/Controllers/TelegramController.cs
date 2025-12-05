@@ -166,7 +166,14 @@ public class TelegramController : ControllerBase
                     cancellationToken);
                 return true;
 
-            
+            case TelegramCommand.Producao:
+                await _telegramSender.SendMessageAsync(
+                    chatId,
+                    BotTexts.Production(),
+                    cancellationToken);
+                return true;
+
+
             default:
                 return false;
         }

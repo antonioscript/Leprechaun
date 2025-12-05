@@ -108,6 +108,7 @@ public class SalaryAccumulatedMonthlyStatementFlowService : IChatFlow
 
                 sb.AppendLine(
                     $"- R$ {tx.Amount:N2} | {desc} | {personName} | {dateLocal:dd/MM/yyyy}");
+                sb.AppendLine();
             }
 
             var totalExpenses = monthExpenses.Sum(t => t.Amount);
@@ -143,6 +144,7 @@ public class SalaryAccumulatedMonthlyStatementFlowService : IChatFlow
 
                 sb.AppendLine(
                     $"- R$ {tx.Amount:N2} | Transferência para {targetName} | {personName} | {dateLocal:dd/MM/yyyy}");
+                sb.AppendLine();
             }
 
             var totalTransfers = internalTransfers.Sum(t => t.Amount);

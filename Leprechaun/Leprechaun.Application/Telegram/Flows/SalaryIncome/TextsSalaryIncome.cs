@@ -26,11 +26,11 @@ public static class TextsSalaryIncome
     public static string SalaryReceipt( Institution institution, decimal amount, DateTime date, decimal totalAccumulated)
     {
         return
-            "**📄 Comprovante de Recebimento** \n\n" +
-            $"🏦 **Instituição:** {institution.Name}\n" +
-            $"💰 **Valor:** R$ {amount:N2}\n" +
-            $"📅 **Data:** {date:dd/MM/yyyy HH:mm}\n\n" +
-            $"💼 **Total Salário Acumulado:** R$ {totalAccumulated:N2}\n\n" +
+            "📄 Comprovante de Recebimento \n\n" +
+            $"🏦 Instituição: {institution.Name}\n" +
+            $"💰 Valor: R$ {amount:N2}\n" +
+            $"📅 Data: {date:dd/MM/yyyy HH:mm}\n\n" +
+            $"💼 Total Salário Acumulado: R$ {totalAccumulated:N2}\n\n" +
             "✔ Recebimento registrado com sucesso!";
     }
 }

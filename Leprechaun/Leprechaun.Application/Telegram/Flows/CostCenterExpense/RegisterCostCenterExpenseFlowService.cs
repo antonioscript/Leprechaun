@@ -245,7 +245,7 @@ public class RegisterCostCenterExpenseFlowService : IChatFlow
 
         await _telegramSender.SendMessageAsync(
             chatId,
-            "📝 Informe a *descrição da despesa*:",
+            "📝 Informe a descrição da despesa:",
             cancellationToken);
     }
 

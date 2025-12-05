@@ -71,7 +71,7 @@ public class SalaryAccumulatedInfoFlowService : IChatFlow
 
         var sb = new StringBuilder();
 
-        sb.AppendLine("*💼 Saldo do Salário Acumulado*");
+        sb.AppendLine("💼 Saldo do Salário Acumulado");
         sb.AppendLine();
         sb.AppendLine($"💰 Saldo total: R$ {total:N2}");
         sb.AppendLine();

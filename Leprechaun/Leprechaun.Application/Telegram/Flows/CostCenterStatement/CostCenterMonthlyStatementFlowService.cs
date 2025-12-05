@@ -257,7 +257,7 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
         }
         else
         {
-            sb.AppendLine("🧾 *Despesas no mês:*\n");
+            sb.AppendLine("🧾 Despesas no mês:\n");
 
             foreach (var tx in monthExpenses)
             {
@@ -292,8 +292,8 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
                     ? nameTarget
                     : "Salário Acumulado";
 
-                sb.AppendLine(
-                    $"- R$ {tx.Amount:N2} | Transferência enviada para caixinha {targetName} | {dateLocal:dd/MM/yyyy}");
+                sb.AppendLine($"- R$ {tx.Amount:N2} | Transferência enviada para caixinha {targetName} | {dateLocal:dd/MM/yyyy}");
+                sb.AppendLine();
             }
 
             foreach (var tx in incomingTransfers)
@@ -306,6 +306,7 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
 
                 sb.AppendLine(
                     $"- R$ {tx.Amount:N2} | Transferência recebida de caixinha {sourceName} | {dateLocal:dd/MM/yyyy}");
+                sb.AppendLine();
             }
 
             var totalExpenses = monthExpenses.Sum(t => t.Amount);

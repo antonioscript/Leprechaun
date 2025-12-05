@@ -69,4 +69,19 @@ public static class BotTexts
     public static string UnknownCommand() =>
         "Não entendi 🤔\nUse /help para ver os comandos disponíveis.";
 
+    public static string Production() =>
+    "🍀 Bem-vindo ao Leprechaun Finance! (o melhor da Vila Leprechaun haha) \n\n" +
+    "Seu assistente pessoal para organização financeira chegou! \n\n" +
+    "Comigo você pode:\n" +
+    "• Registrar salários e entradas de renda\n" +
+    "• Controlar caixinhas individuais para cada objetivo\n" +
+    "• Acompanhar extratos mensais\n" +
+    "• Transferir valores entre caixinhas\n" +
+    "• Registrar despesas do salário acumulado\n" +
+    "• Enviar sugestões de melhoria diretamente aqui\n\n" +
+    "Tudo isso de forma simples, rápida e totalmente integrada ao seu sistema financeiro. \n\n" +
+    "📌 Para começar, use o comando /start.\n" +
+    "💼 Vamos construir sua liberdade financeira passo a passo. Conte comigo! 🍀";
+
+
 }
