@@ -2,6 +2,7 @@
 using System.Text;
 using Leprechaun.Application.Telegram;
 using Leprechaun.Domain.Entities;
+using Leprechaun.Domain.Enums;
 using Leprechaun.Domain.Interfaces;
 
 namespace Leprechaun.Application.Telegram.Flows.CostCenterExpense;
@@ -62,7 +63,7 @@ public class RegisterCostCenterExpenseFlowService : IChatFlow
     {
         state.State = FlowStates.CostCenterExpenseAwaitingPerson;
         state.TempPersonId = null;
-        state.TempSourceCostCenterId = null; // 👈 aqui
+        state.TempSourceCostCenterId = null;
         state.TempAmount = null;
         state.UpdatedAt = DateTime.UtcNow;
 
@@ -139,14 +140,15 @@ public class RegisterCostCenterExpenseFlowService : IChatFlow
         await _chatStateService.SaveAsync(state, cancellationToken);
 
         var centers = (await _costCenterService.GetAllAsync(cancellationToken))
-            .Where(c => c.PersonId == personId)
+            .Where(c => c.PersonId == personId &&
+                        c.Type != CostCenterType.ProibidaDespesaDireta) // 👈 NÃO MOSTRA PROIBIDA
             .ToList();
 
         if (!centers.Any())
         {
             await _telegramSender.SendMessageAsync(
                 chatId,
-                "⚠️ Esse titular não possui caixinhas.",
+                "⚠️ Esse titular não possui caixinhas elegíveis para despesa.",
                 cancellationToken);
             await _chatStateService.ClearAsync(chatId, cancellationToken);
             return;
@@ -178,7 +180,28 @@ public class RegisterCostCenterExpenseFlowService : IChatFlow
             return;
         }
 
-        state.TempSourceCostCenterId = centerId; // 👈 guarda aqui
+        // Segurança extra: verificar se a caixinha não é ProibidaDespesaDireta
+        var center = await _costCenterService.GetByIdAsync(centerId, cancellationToken);
+        if (center is null)
+        {
+            await _telegramSender.SendMessageAsync(
+                chatId,
+                "⚠️ Caixinha não encontrada. Tente novamente.",
+                cancellationToken);
+            return;
+        }
+
+        if (center.Type == CostCenterType.ProibidaDespesaDireta)
+        {
+            await _telegramSender.SendMessageAsync(
+                chatId,
+                "⚠️ Não é permitido registrar despesa diretamente nessa caixinha.",
+                cancellationToken);
+            await _chatStateService.ClearAsync(chatId, cancellationToken);
+            return;
+        }
+
+        state.TempSourceCostCenterId = centerId;
         state.State = FlowStates.CostCenterExpenseAwaitingAmount;
         state.UpdatedAt = DateTime.UtcNow;
         await _chatStateService.SaveAsync(state, cancellationToken);
@@ -279,7 +302,6 @@ public class RegisterCostCenterExpenseFlowService : IChatFlow
         var centerId = state.TempSourceCostCenterId.Value;
         var amount = state.TempAmount.Value;
 
-        // Registra a despesa a partir da caixinha
         await _transactionService.RegisterExpenseFromCostCenterAsync(
             personId,
             centerId,
@@ -289,7 +311,6 @@ public class RegisterCostCenterExpenseFlowService : IChatFlow
             description: description,
             cancellationToken);
 
-        // Novo saldo da caixinha
         var newBalance = await _transactionService.GetCostCenterBalanceAsync(centerId, cancellationToken);
 
         var persons = await _personService.GetAllAsync(cancellationToken);
