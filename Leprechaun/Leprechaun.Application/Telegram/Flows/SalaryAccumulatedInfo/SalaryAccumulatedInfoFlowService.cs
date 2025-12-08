@@ -63,9 +63,9 @@ public class SalaryAccumulatedInfoFlowService : IChatFlow
         var lastUpdate = await _transactionService
             .GetLastSalaryAccumulatedUpdateAsync(cancellationToken);
 
-        // 4) Percentual de 1 milhão
-        const decimal target = 1_000_000m;
-        var percentOfMillion = target > 0m
+        // 4) Percentual de 500 mil
+        const decimal target = 500_000m;
+        var percentOfTarget = target > 0m
             ? (total / target) * 100m
             : 0m;
 
@@ -86,7 +86,7 @@ public class SalaryAccumulatedInfoFlowService : IChatFlow
             sb.AppendLine("🕒 Última atualização: Sem movimentações registradas.");
 
         sb.AppendLine();
-        sb.AppendLine($"📊 Isso representa {percentOfMillion:N2}% de R$ 1.000.000,00.");
+        sb.AppendLine($"📊 Isso representa {percentOfTarget:N2}% de R$ 500.000,00.");
 
         var text = sb.ToString();
 
@@ -96,5 +96,6 @@ public class SalaryAccumulatedInfoFlowService : IChatFlow
             cancellationToken);
 
         return true;
+
     }
 }
