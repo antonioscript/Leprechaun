@@ -6,39 +6,42 @@ namespace Leprechaun.Application.Services;
 
 public class ExpenseService : IExpenseService
 {
-    private readonly IExpenseRepository _expenseRepository;
+    private readonly IExpenseRepository _repository;
 
-    public ExpenseService(IExpenseRepository expenseRepository)
+    public ExpenseService(IExpenseRepository repository)
     {
-        _expenseRepository = expenseRepository;
+        _repository = repository;
     }
 
     public Task<List<Expense>> GetAllAsync(CancellationToken cancellationToken = default)
-        => _expenseRepository.GetAllAsync(cancellationToken);
+        => _repository.GetAllAsync(cancellationToken);
 
     public Task<Expense?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
-        => _expenseRepository.GetByIdAsync(id, cancellationToken);
+        => _repository.GetByIdAsync(id, cancellationToken);
+
+    public Task<List<Expense>> GetByCostCenterAsync(int costCenterId, CancellationToken cancellationToken = default)
+        => _repository.GetByCostCenterAsync(costCenterId, cancellationToken);
 
     public async Task<Expense> CreateAsync(Expense expense, CancellationToken cancellationToken = default)
     {
-        await _expenseRepository.AddAsync(expense, cancellationToken);
-        await _expenseRepository.SaveChangesAsync(cancellationToken);
+        await _repository.AddAsync(expense, cancellationToken);
+        await _repository.SaveChangesAsync(cancellationToken);
         return expense;
     }
 
     public async Task UpdateAsync(Expense expense, CancellationToken cancellationToken = default)
     {
-        _expenseRepository.Update(expense);
-        await _expenseRepository.SaveChangesAsync(cancellationToken);
+        _repository.Update(expense);
+        await _repository.SaveChangesAsync(cancellationToken);
     }
 
     public async Task DeleteAsync(int id, CancellationToken cancellationToken = default)
     {
-        var entity = await _expenseRepository.GetByIdAsync(id, cancellationToken);
+        var entity = await _repository.GetByIdAsync(id, cancellationToken);
         if (entity is null)
             return;
 
-        _expenseRepository.Remove(entity);
-        await _expenseRepository.SaveChangesAsync(cancellationToken);
+        _repository.Remove(entity);
+        await _repository.SaveChangesAsync(cancellationToken);
     }
 }

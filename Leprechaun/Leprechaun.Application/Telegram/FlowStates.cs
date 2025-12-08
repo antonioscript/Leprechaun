@@ -40,6 +40,12 @@ public static class FlowStates
     public const string CostCenterExpenseAwaitingAmount = "CostCenterExpense_AwaitingAmount";
     public const string CostCenterExpenseAwaitingDescription = "CostCenterExpense_AwaitingDescription";
 
+    //Para Infra: 
+    public const string CostCenterExpenseAwaitingInfraTemplate = "CostCenterExpense_AwaitingInfraTemplate";
+    public const string CostCenterExpenseAwaitingInfraConfirmOrAdjust = "CostCenterExpense_AwaitingInfraConfirmOrAdjust";
+    public const string CostCenterExpenseAwaitingInfraCustomAmount = "CostCenterExpense_AwaitingInfraCustomAmount";
+
+
     //fluxo de extrato da caixinha no mês
     public const string CostCenterStatementAwaitingPerson = "CostCenterStatement_AwaitingPerson";
     public const string CostCenterStatementAwaitingCenter = "CostCenterStatement_AwaitingCenter";

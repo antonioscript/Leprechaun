@@ -1,3 +1,4 @@
+using Leprechaun.Application.DTOs;
 using Leprechaun.Domain.Entities;
 using Leprechaun.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -5,63 +6,47 @@ using Microsoft.AspNetCore.Mvc;
 namespace Leprechaun.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-public class ExpensesController : ControllerBase
+[Route("expenses")]
+public class ExpenseController : ControllerBase
 {
     private readonly IExpenseService _expenseService;
 
-    public ExpensesController(IExpenseService expenseService)
+    public ExpenseController(IExpenseService expenseService)
     {
         _expenseService = expenseService;
     }
 
-    [HttpGet]
-    public async Task<ActionResult<List<Expense>>> GetAll(CancellationToken cancellationToken)
+    [HttpPost]
+    public async Task<IActionResult> Create(
+        [FromBody] CreateExpenseRequest request,
+        CancellationToken cancellationToken)
     {
-        var list = await _expenseService.GetAllAsync(cancellationToken);
-        return Ok(list);
+        var expense = new Expense
+        {
+            CostCenterId = request.CostCenterId,
+            Name = request.Name,
+            Description = request.Description,
+            DefaultAmount = request.DefaultAmount,
+            DueDay = request.DueDay,
+            CategoryId = request.CategoryId,
+            IsActive = request.IsActive
+        };
+
+        var created = await _expenseService.CreateAsync(expense, cancellationToken);
+
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id = created.Id },
+            created);
     }
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<Expense>> GetById(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
     {
-        var item = await _expenseService.GetByIdAsync(id, cancellationToken);
-        if (item is null)
+        var expense = await _expenseService.GetByIdAsync(id, cancellationToken);
+        if (expense is null)
             return NotFound();
 
-        return Ok(item);
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<Expense>> Create([FromBody] Expense model, CancellationToken cancellationToken)
-    {
-        var created = await _expenseService.CreateAsync(model, cancellationToken);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
-    }
-
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] Expense model, CancellationToken cancellationToken)
-    {
-        var existing = await _expenseService.GetByIdAsync(id, cancellationToken);
-        if (existing is null)
-            return NotFound();
-
-        existing.Name = model.Name;
-        existing.Description = model.Description;
-        existing.DefaultAmount = model.DefaultAmount;
-        existing.DueDay = model.DueDay;
-        existing.CostCenterId = model.CostCenterId;
-        existing.CategoryId = model.CategoryId;
-        existing.IsActive = model.IsActive;
-
-        await _expenseService.UpdateAsync(existing, cancellationToken);
-        return NoContent();
-    }
-
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
-    {
-        await _expenseService.DeleteAsync(id, cancellationToken);
-        return NoContent();
+        return Ok(expense);
     }
 }

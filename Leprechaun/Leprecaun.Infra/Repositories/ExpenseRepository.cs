@@ -17,24 +17,32 @@ public class ExpenseRepository : IExpenseRepository
     public Task<List<Expense>> GetAllAsync(CancellationToken cancellationToken = default)
         => _context.Expenses
             .AsNoTracking()
-            .Include(e => e.CostCenter)
-            .Include(e => e.Category)
             .ToListAsync(cancellationToken);
 
     public Task<Expense?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         => _context.Expenses
-            .Include(e => e.CostCenter)
-            .Include(e => e.Category)
             .FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
 
-    public Task AddAsync(Expense expense, CancellationToken cancellationToken = default)
-        => _context.Expenses.AddAsync(expense, cancellationToken).AsTask();
+    public Task<List<Expense>> GetByCostCenterAsync(int costCenterId, CancellationToken cancellationToken = default)
+        => _context.Expenses
+            .AsNoTracking()
+            .Where(e => e.CostCenterId == costCenterId)
+            .ToListAsync(cancellationToken);
+
+    public async Task AddAsync(Expense expense, CancellationToken cancellationToken = default)
+    {
+        await _context.Expenses.AddAsync(expense, cancellationToken);
+    }
 
     public void Update(Expense expense)
-        => _context.Expenses.Update(expense);
+    {
+        _context.Expenses.Update(expense);
+    }
 
     public void Remove(Expense expense)
-        => _context.Expenses.Remove(expense);
+    {
+        _context.Expenses.Remove(expense);
+    }
 
     public Task SaveChangesAsync(CancellationToken cancellationToken = default)
         => _context.SaveChangesAsync(cancellationToken);

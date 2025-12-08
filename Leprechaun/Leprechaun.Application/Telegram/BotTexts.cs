@@ -89,12 +89,15 @@ public static class BotTexts
 
 
     public static string VersionNote() =>
-    "🟩 Release Notes — Versão 1.1.0\n\n" +
+    "🟩 Release Notes — Versão 1.2.1\n\n" +
     "Novas Features 🚀\n" +
-    "• Novo comando /patrimonio que lista o patrimônio total, incluindo salário acumulado, caixinhas e divisão por titular.\n" +
-    "• Novo comando /sugerir_feature para criar e enviar sugestões de novas funcionalidades.\n" +
+    "• Atualização: Meta alterada para R$ 500.000, 00\n" +
+    "• Atualização: As Caixinhas agora tem 3 tipos (Default, Proibida Despesa Direta e Infra Mensal).\n" +
+    "• Nova regra: Não se pode cadastrar uma despesa de uma caixinha que foi marcada como 'Proibida Despesa Direta' .\n" +
+    "• Nova Funcionalidade: Nas despesas mensais de Infra aparece a lista de despesa padrão .\n" +
+    "• Nova Funcionalidade: No relatório da Caixinha de Infra apresenta umas particularidades comparadas com outras caixinhas .\n" +
     "• Novo comando /listar_features para visualizar todas as features sugeridas.\n\n" +
-    "Versão: 1.1.0\n" +
+    "Versão: 1.2.1\n" +
     "— Leprechaun Bot";
 
 
