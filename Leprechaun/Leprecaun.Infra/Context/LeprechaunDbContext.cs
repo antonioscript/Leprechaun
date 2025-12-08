@@ -80,6 +80,7 @@ public class LeprechaunDbContext : DbContext
         entity.Property(c => c.PersonId).HasColumnName("personid");
         entity.Property(c => c.Description).HasColumnName("description");
         entity.Property(c => c.IsActive).HasColumnName("isactive");
+        entity.Property(c => c.Type).HasColumnName("type").HasConversion<string>();
 
         entity.HasOne(c => c.Person)
             .WithMany()

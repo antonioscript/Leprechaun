@@ -11,6 +11,8 @@ public static class FlowStates
     // Fluxo de criação de caixinha
     public const string CostCenterAwaitingName = "CostCenter_AwaitingName";
     public const string CostCenterAwaitingOwner = "CostCenter_AwaitingOwner";
+    public const string CostCenterAwaitingType = "CostCenter_AwaitingType";
+
 
     // Fluxo de transferência entre caixinhas
     public const string CostCenterTransferAwaitingPerson = "CostCenterTransfer_AwaitingPerson";

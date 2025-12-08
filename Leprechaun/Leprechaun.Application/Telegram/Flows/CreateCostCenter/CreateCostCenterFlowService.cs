@@ -1,10 +1,6 @@
 ﻿using Leprechaun.Domain.Entities;
+using Leprechaun.Domain.Enums;
 using Leprechaun.Domain.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Leprechaun.Application.Telegram.Flows.CreateCostCenter;
 
@@ -34,9 +30,10 @@ public class CreateCostCenterFlowService : IChatFlow
         TelegramCommand command,
         CancellationToken cancellationToken)
     {
-        // 1) Se já estamos no fluxo, continua
+        // 1) Se já estamos em algum passo do fluxo, continua
         if (state.State == FlowStates.CostCenterAwaitingName ||
-            state.State == FlowStates.CostCenterAwaitingOwner)
+            state.State == FlowStates.CostCenterAwaitingOwner ||
+            state.State == FlowStates.CostCenterAwaitingType)
         {
             await HandleOngoingFlowAsync(chatId, userText, state, cancellationToken);
             return true;
@@ -62,6 +59,7 @@ public class CreateCostCenterFlowService : IChatFlow
     {
         state.State = FlowStates.CostCenterAwaitingName;
         state.TempCostCenterName = null;
+        state.TempPersonId = null;
         state.UpdatedAt = DateTime.UtcNow;
 
         await _chatStateService.SaveAsync(state, cancellationToken);
@@ -87,6 +85,10 @@ public class CreateCostCenterFlowService : IChatFlow
         else if (state.State == FlowStates.CostCenterAwaitingOwner)
         {
             await HandleOwnerAsync(chatId, userText, state, cancellationToken);
+        }
+        else if (state.State == FlowStates.CostCenterAwaitingType)
+        {
+            await HandleTypeAsync(chatId, userText, state, cancellationToken);
         }
     }
 
@@ -164,16 +166,79 @@ public class CreateCostCenterFlowService : IChatFlow
             return;
         }
 
+        state.TempPersonId = personId;
+        state.State = FlowStates.CostCenterAwaitingType;
+        state.UpdatedAt = DateTime.UtcNow;
+
+        await _chatStateService.SaveAsync(state, cancellationToken);
+
+        // Pergunta o tipo da caixinha
+        var buttons = new List<(string Label, string Data)>
+        {
+            ("Default (normal)", "type_default"),
+            ("Proibida despesa direta", "type_blocked"),
+            ("Infra mensal", "type_infra")
+        };
+
+        await _telegramSender.SendMessageWithInlineKeyboardAsync(
+            chatId,
+            "🏷️ *Escolha o tipo da caixinha:*",
+            buttons,
+            cancellationToken);
+    }
+
+    private async Task HandleTypeAsync(
+        long chatId,
+        string userText,
+        ChatState state,
+        CancellationToken cancellationToken)
+    {
+        if (state.TempPersonId is null || string.IsNullOrWhiteSpace(state.TempCostCenterName))
+        {
+            await _telegramSender.SendMessageAsync(
+                chatId,
+                "⚠️ Erro interno. Recomece com /criar_caixinha.",
+                cancellationToken);
+            await _chatStateService.ClearAsync(chatId, cancellationToken);
+            return;
+        }
+
+        var type = userText switch
+        {
+            "type_default" => CostCenterType.Default,
+            "type_blocked" => CostCenterType.ProibidaDespesaDireta,
+            "type_infra" => CostCenterType.InfraMensal,
+            _ => CostCenterType.Default
+        };
+
+        // Se for InfraMensal, validar se já existe alguma
+        if (type == CostCenterType.InfraMensal)
+        {
+            var all = await _costCenterService.GetAllAsync(cancellationToken);
+            if (all.Any(c => c.Type == CostCenterType.InfraMensal))
+            {
+                await _telegramSender.SendMessageAsync(
+                    chatId,
+                    "⚠️ Já existe uma caixinha do tipo Infra Mensal. Atualemnte Só é permitido existir uma. ",
+                    cancellationToken);
+
+                await _chatStateService.ClearAsync(chatId, cancellationToken);
+                return;
+            }
+        }
+
         var costCenter = await _costCenterService.CreateAsync(
             state.TempCostCenterName,
-            personId,
+            state.TempPersonId.Value,
+            type,
             cancellationToken);
 
         await _chatStateService.ClearAsync(chatId, cancellationToken);
 
         await _telegramSender.SendMessageAsync(
             chatId,
-            $"✅ Caixinha {costCenter.Name} criada com sucesso!.",
+            $"✅ Caixinha *{costCenter.Name}* criada com sucesso!\n" +
+            $"🏷️ Tipo: *{type}*",
             cancellationToken);
 
         await _telegramSender.SendMessageAsync(

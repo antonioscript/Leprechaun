@@ -1,4 +1,5 @@
 using Leprechaun.Domain.Entities;
+using Leprechaun.Domain.Enums;
 using Leprechaun.Domain.Interfaces;
 using Leprechaun.Domain.Repositories;
 
@@ -27,18 +28,22 @@ public class CostCenterService : ICostCenterService
     }
 
     // ?? NOVO: usado pelo fluxo /criar_caixinha
-    public async Task<CostCenter> CreateAsync(string name, int personId, CancellationToken cancellationToken = default)
+    public async Task<CostCenter> CreateAsync(string name, int personId, CostCenterType type, CancellationToken cancellationToken = default)
     {
-        var costCenter = new CostCenter
+        var cc = new CostCenter
         {
             Name = name,
             PersonId = personId,
-            // se sua entity tiver mais campos obrigatórios, pode setar aqui
-            // Ex: CreatedAt = DateTime.UtcNow, IsActive = true, etc.
+            Type = type,
+            IsActive = true
         };
 
-        return await CreateAsync(costCenter, cancellationToken);
+        await _costCenterRepository.AddAsync(cc, cancellationToken);
+        await _costCenterRepository.SaveChangesAsync(cancellationToken);
+
+        return cc;
     }
+
 
     public async Task UpdateAsync(CostCenter costCenter, CancellationToken cancellationToken = default)
     {
