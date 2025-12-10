@@ -15,11 +15,6 @@ A magical .NET 8 Telegram bot that helps track and organize shared financial inp
 
 ---
 
-
-## Versão de Produção
-
-https://c2w4peqtjzmmvdbfrxcqra3zf40qnmnq.lambda-url.us-east-1.on.aws/swagger/index.html
-
 ## Versão de Desenvolvimento
 https://octnugx5mj25daebv2wvedkbku0ktaoh.lambda-url.us-east-1.on.aws/swagger/index.html
 
@@ -35,6 +30,3 @@ Perfect for couples, families, or small groups who need a simple way to track re
 ## 🖼️ Logo
 
 After uploading your logo to the repository, reference it like this:
-
-```markdown
-![Leprechaun Finance Logo](LOGO_HERE)
