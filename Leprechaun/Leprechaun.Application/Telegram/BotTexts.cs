@@ -95,12 +95,12 @@ public static class BotTexts
     public static string VersionNote() =>
     "🟩 Release Notes — Versão 1.2.1\n\n" +
     "Novas Features 🚀\n" +
-    "• Atualização: Meta alterada para R$ 500.000, 00\n" +
+    "• Atualização: Meta alterada para R$ 500.000, 00\n no comando /saldo_salario_acumulado" +
     "• Atualização: As Caixinhas agora tem 3 tipos (Default, Proibida Despesa Direta e Infra Mensal).\n" +
     "• Nova regra: Não se pode cadastrar uma despesa de uma caixinha que foi marcada como 'Proibida Despesa Direta' .\n" +
-    "• Nova Funcionalidade: Nas despesas mensais de Infra aparece a lista de despesa pré-cadastradas.\n" +
+    "• Nova Funcionalidade: Nas despesas mensais de Infra aparecem a lista de despesas pré-cadastradas.\n" +
     "• Nova Funcionalidade: No relatório da Caixinha de Infra Mensal apresenta particularidades diferentes comparadas com outras caixinhas .\n" +
-    "• Novo comando /saldo_salarios para visualizar todas os recebimentos de salário no mês.\n\n" +
+    "• Novo comando: /saldo_salarios para visualizar todas os recebimentos de salário no mês.\n\n" +
     "Versão: 1.2.1\n" +
     "— Leprechaun Bot";
 
