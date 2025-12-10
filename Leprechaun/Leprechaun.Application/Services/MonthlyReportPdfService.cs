@@ -74,12 +74,14 @@ public class MonthlyReportPdfService : IMonthlyReportPdfService
                 {
                     col.Spacing(18);
 
+                    /*
                     // --- Título principal ---
                     col.Item().Text("Relatório de Patrimônio")
                         .FontSize(16)
                         .Bold()
                         .FontColor("#1B5E20");
-
+                    */
+                    
                     // --- Visão Geral (estilo Inter) ---
 col.Item().Column(sec =>
 {
@@ -115,14 +117,10 @@ col.Item().Column(sec =>
                         .FontColor("#1B5E20");
                 });
 
-                // Divisor vertical
-                row.ConstantColumn(1).Element(div =>
-                {
-                    div
-                        .MinHeight(40)       // altura aproximada
-                        .BorderLeft(1)
-                        .BorderColor("#E0E0E0");
-                });
+                // Divisor vertical com espaçamento horizontal
+                row.ConstantColumn(30)          // dá ~30pt de “respiro” entre saldo e entradas/despesas
+                    .BorderLeft(1)
+                    .BorderColor("#E0E0E0");
 
                 // Coluna direita: Entradas e Despesas
                 row.RelativeColumn().Column(right =>
