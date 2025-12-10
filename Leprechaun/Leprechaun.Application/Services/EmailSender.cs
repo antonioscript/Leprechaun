@@ -47,7 +47,7 @@ public class EmailSender : IEmailSender
             {
                 From = new MailAddress(_smtpUser, "Leprechaun Finance Bot"),
                 Subject = $"Relatório de Patrimônio - {start:dd/MM/yyyy} a {end:dd/MM/yyyy}",
-                Body = "Segue em anexo o relatório em PDF gerado pelo Leprechaun Bot.",
+                Body = "Segue em anexo o relatório mensal de despesas!",
             };
 
             message.To.Add(recipient);
