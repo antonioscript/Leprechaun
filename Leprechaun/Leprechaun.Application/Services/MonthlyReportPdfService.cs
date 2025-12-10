@@ -1,5 +1,5 @@
-using System.Reflection;
 using System.Linq;
+using System.Reflection;
 using Leprechaun.Domain.Interfaces;
 using Leprechaun.Domain.Response;
 using QuestPDF.Fluent;
@@ -17,7 +17,7 @@ public class MonthlyReportPdfService : IMonthlyReportPdfService
         const string resourceName = "Leprechaun.Application.Assets.leprechaun-logo.png";
 
         using var stream = assembly.GetManifestResourceStream(resourceName)
-                      ?? throw new Exception("Logo leprechaun-logo.png não encontrada como EmbeddedResource.");
+                          ?? throw new Exception("Logo leprechaun-logo.png não encontrada como EmbeddedResource.");
         using var ms = new MemoryStream();
         stream.CopyTo(ms);
         return ms.ToArray();
@@ -27,6 +27,11 @@ public class MonthlyReportPdfService : IMonthlyReportPdfService
     {
         var logoBytes = LoadLogo();
 
+        // totais para usar no relatório
+        var totalCaixinhas = data.CostCenters.Sum(c => c.TotalExpenses);
+        var totalDespesasSalario = data.SalaryOutflows; // equivalente à soma das despesas do salário acumulado
+        var totalDespesasGeral = totalDespesasSalario + totalCaixinhas;
+
         var document = Document.Create(container =>
         {
             container.Page(page =>
@@ -35,47 +40,45 @@ public class MonthlyReportPdfService : IMonthlyReportPdfService
                 page.Size(PageSizes.A4);
 
                 page.DefaultTextStyle(x =>
-                    x.FontSize(12).FontFamily(Fonts.Verdana));
+                    x.FontSize(11).FontFamily(Fonts.Verdana));
 
                 // ========== HEADER ==========
                 page.Header().Row(row =>
                 {
                     // logo maior
                     row.ConstantColumn(90)
-                        .Height(60)
+                        .Height(70)
                         .Image(logoBytes, ImageScaling.FitArea);
 
                     row.RelativeColumn().Column(col =>
                     {
                         col.Item().Text("Leprechaun Finance")
-                            .FontSize(26)
+                            .FontSize(22)
                             .Bold()
                             .FontColor("#1B5E20");
 
                         col.Item().Text(title)
-                            .FontSize(13)
+                            .FontSize(12)
                             .FontColor("#555555");
                     });
                 });
 
                 // ========== CONTENT ==========
-                page.Content().PaddingTop(25).Column(col =>
+                page.Content().PaddingTop(20).Column(col =>
                 {
-                    col.Spacing(18);
+                    col.Spacing(16);
 
                     // --- Título principal ---
                     col.Item().Text("Relatório de Patrimônio")
-                        .FontSize(20)
+                        .FontSize(16)
                         .Bold()
                         .FontColor("#1B5E20");
 
-                    // ============================
-                    //         VISÃO GERAL
-                    // ============================
+                    // --- Visão Geral ---
                     col.Item().Column(sec =>
                     {
                         sec.Item().Text("Visão Geral")
-                            .FontSize(16)
+                            .FontSize(14)
                             .Bold()
                             .FontColor("#33691E");
 
@@ -84,13 +87,11 @@ public class MonthlyReportPdfService : IMonthlyReportPdfService
                         sec.Item().Text($"Saldo (Entradas - Saídas externas): R$ {data.GeneralBalance:N2}");
                     });
 
-                    // ============================
-                    //      SALÁRIO ACUMULADO
-                    // ============================
+                    // --- Salário Acumulado ---
                     col.Item().Column(sec =>
                     {
                         sec.Item().Text("Salário Acumulado")
-                            .FontSize(16)
+                            .FontSize(14)
                             .Bold()
                             .FontColor("#33691E");
 
@@ -99,94 +100,99 @@ public class MonthlyReportPdfService : IMonthlyReportPdfService
 
                         if (data.SalaryExpenses.Any())
                         {
-                            sec.Item().PaddingTop(8).Text("Despesas (salário acumulado)")
-                                .FontSize(13)
-                                .Bold();
+                            // tabela de despesas (sem o título "Despesas ...")
+                            bool odd = false;
 
-                            // linhas estilo extrato
-                            sec.Item().Column(list =>
+                            foreach (var exp in data.SalaryExpenses.OrderBy(e => e.Date))
                             {
-                                int index = 0;
-                                foreach (var exp in data.SalaryExpenses.OrderBy(e => e.Date))
-                                {
-                                    var bg = index % 2 == 0 ? "#F0F0F0" : "#DADADA";
-                                    index++;
+                                var localOdd = odd;
+                                sec.Item()
+                                    .PaddingTop(4)
+                                    .Background(localOdd ? "#F5F5F5" : "#EEEEEE")
+                                    .Padding(6)
+                                    .Row(row =>
+                                    {
+                                        row.RelativeColumn()
+                                            .Text($"{exp.Date:dd/MM/yyyy} | {exp.Description}");
 
-                                    list.Item()
-                                        .Background(bg)
-                                        .Padding(8)
-                                        .Row(row =>
-                                        {
-                                            row.RelativeColumn().Text(
-                                                $"{exp.Date:dd/MM/yyyy}  |  {exp.Description}");
+                                        row.ConstantColumn(100)
+                                            .AlignRight()
+                                            .Text($"R$ {exp.Amount:N2}");
+                                    });
 
-                                            row.ConstantColumn(110)
-                                                .AlignRight()
-                                                .Text($"R$ {exp.Amount:N2}");
-                                        });
-                                }
-                            });
+                                odd = !odd;
+                            }
+
+                            // total de despesas do salário acumulado logo abaixo da tabela
+                            sec.Item().PaddingTop(6)
+                                .Text($"Total de despesas do salário acumulado: R$ {totalDespesasSalario:N2}")
+                                .FontSize(11)
+                                .Bold();
                         }
                     });
 
-                    // ============================
-                    //          CAIXINHAS
-                    // ============================
+                    // --- Caixinhas ---
                     col.Item().Column(sec =>
                     {
                         sec.Item().Text("Caixinhas")
-                            .FontSize(16)
+                            .FontSize(14)
                             .Bold()
                             .FontColor("#33691E");
 
                         foreach (var cc in data.CostCenters.OrderBy(c => c.Name))
                         {
-                            sec.Item().PaddingTop(12).Column(box =>
+                            // nome da caixinha com um pequeno espaço antes da tabela
+                            sec.Item().PaddingTop(12).Text(cc.Name)
+                                .FontSize(12)
+                                .Bold();
+
+                            if (cc.Expenses.Any())
                             {
-                                // Título da caixinha
-                                box.Item().Text(cc.Name)
-                                    .FontSize(14)
-                                    .Bold();
+                                bool odd = false;
 
-                                if (cc.Expenses.Any())
+                                foreach (var exp in cc.Expenses.OrderBy(e => e.Date))
                                 {
-                                    // 🟩 Espaço entre nome → tabela
-                                    box.Item().PaddingTop(6).Column(list =>
-                                    {
-                                        int index = 0;
-                                        foreach (var exp in cc.Expenses.OrderBy(e => e.Date))
+                                    var localOdd = odd;
+
+                                    sec.Item()
+                                        .PaddingTop(4)
+                                        .Background(localOdd ? "#F5F5F5" : "#EEEEEE")
+                                        .Padding(6)
+                                        .Row(row =>
                                         {
-                                            var bg = index % 2 == 0 ? "#F0F0F0" : "#DADADA";
-                                            index++;
+                                            row.RelativeColumn()
+                                                .Text($"{exp.Date:dd/MM/yyyy} | {exp.Description}");
 
-                                            list.Item()
-                                                .Background(bg)
-                                                .Padding(8)
-                                                .Row(row =>
-                                                {
-                                                    row.RelativeColumn()
-                                                        .Text($"{exp.Date:dd/MM/yyyy}  |  {exp.Description}");
+                                            row.ConstantColumn(100)
+                                                .AlignRight()
+                                                .Text($"R$ {exp.Amount:N2}");
+                                        });
 
-                                                    row.ConstantColumn(110)
-                                                        .AlignRight()
-                                                        .Text($"R$ {exp.Amount:N2}");
-                                                });
-                                        }
-                                    });
+                                    odd = !odd;
                                 }
 
-                                // 🟩 Espaço entre tabela → total
-                                box.Item().PaddingTop(6)
+                                // pequeno espaço entre tabela e total
+                                sec.Item().PaddingTop(4)
                                     .Text($"Total de despesas: R$ {cc.TotalExpenses:N2}")
-                                    .FontSize(12)
+                                    .FontSize(11)
                                     .Bold();
-                            });
+                            }
+                            else
+                            {
+                                // caixinha sem despesas
+                                sec.Item().PaddingTop(4)
+                                    .Text("Sem despesas no período.")
+                                    .FontSize(10)
+                                    .FontColor("#777777");
+                            }
                         }
-                        var totalCenters = data.CostCenters.Sum(c => c.TotalExpenses);
-                        sec.Item().PaddingTop(12)
-                            .Text($"Total de despesas em caixinhas: R$ {totalCenters:N2}")
-                            .FontSize(13)
-                            .Bold();
+
+                        // total geral de despesas (salário + caixinhas), maior e verde
+                        sec.Item().PaddingTop(18)
+                            .Text($"Total de despesas: R$ {totalDespesasGeral:N2}")
+                            .FontSize(14)
+                            .Bold()
+                            .FontColor("#1B5E20");
                     });
                 });
 
