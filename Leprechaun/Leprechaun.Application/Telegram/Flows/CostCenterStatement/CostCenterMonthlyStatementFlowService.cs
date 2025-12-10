@@ -1,6 +1,10 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Leprechaun.Application.Telegram;
 using Leprechaun.Domain.Entities;
+using Leprechaun.Domain.Enums;
 using Leprechaun.Domain.Interfaces;
 
 namespace Leprechaun.Application.Telegram.Flows.CostCenterStatement;
@@ -11,6 +15,7 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
     private readonly IPersonService _personService;
     private readonly ICostCenterService _costCenterService;
     private readonly IFinanceTransactionService _transactionService;
+    private readonly IExpenseService _expenseService;
     private readonly ITelegramSender _telegramSender;
 
     public CostCenterMonthlyStatementFlowService(
@@ -18,12 +23,14 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
         IPersonService personService,
         ICostCenterService costCenterService,
         IFinanceTransactionService transactionService,
+        IExpenseService expenseService,
         ITelegramSender telegramSender)
     {
         _chatStateService = chatStateService;
         _personService = personService;
         _costCenterService = costCenterService;
         _transactionService = transactionService;
+        _expenseService = expenseService;
         _telegramSender = telegramSender;
     }
 
@@ -182,9 +189,20 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
         state.UpdatedAt = DateTime.UtcNow;
         await _chatStateService.SaveAsync(state, cancellationToken);
 
-        // Dados básicos
         var persons = await _personService.GetAllAsync(cancellationToken);
         var person = persons.FirstOrDefault(p => p.Id == personId);
+
+        if (person is null)
+        {
+            await _telegramSender.SendMessageAsync(
+                chatId,
+                "⚠️ Titular não encontrado.",
+                cancellationToken);
+            await _chatStateService.ClearAsync(chatId, cancellationToken);
+            return;
+        }
+
+        var personName = person.Name;
 
         var centers = (await _costCenterService.GetAllAsync(cancellationToken)).ToList();
         var center = centers.FirstOrDefault(c => c.Id == centerId);
@@ -199,17 +217,46 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
             return;
         }
 
-        // Saldo atual da caixinha
+        // 🔹 Se for InfraMensal → relatório especial
+        if (center.Type == CostCenterType.InfraMensal)
+        {
+            await HandleInfraMonthlyStatementAsync(
+                chatId,
+                personName,
+                center,
+                cancellationToken);
+        }
+        else
+        {
+            await HandleDefaultMonthlyStatementAsync(
+                chatId,
+                personName,
+                center,
+                centers,
+                cancellationToken);
+        }
+
+        await _chatStateService.ClearAsync(chatId, cancellationToken);
+    }
+
+    // ===================== RELATÓRIO PADRÃO =====================
+
+    private async Task HandleDefaultMonthlyStatementAsync(
+        long chatId,
+        string personName,
+        CostCenter center,
+        List<CostCenter> allCenters,
+        CancellationToken cancellationToken)
+    {
+        var centerId = center.Id;
+
         var balance = await _transactionService.GetCostCenterBalanceAsync(centerId, cancellationToken);
 
-        // Período: mês atual (do primeiro dia até agora)
         var now = DateTime.UtcNow;
         var startOfMonth = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
 
-        // Todas as transações e filtragens
         var allTx = await _transactionService.GetAllAsync(cancellationToken);
 
-        // Despesas da caixinha no mês
         var monthExpenses = allTx
             .Where(t =>
                 t.SourceCostCenterId == centerId &&
@@ -219,7 +266,6 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
             .OrderBy(t => t.TransactionDate)
             .ToList();
 
-        // Transferências internas no mês
         var outgoingTransfers = allTx
             .Where(t =>
                 t.TransactionType == "Transfer" &&
@@ -238,26 +284,27 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
             .OrderBy(t => t.TransactionDate)
             .ToList();
 
-        var centersById = centers.ToDictionary(c => c.Id, c => c.Name);
+        var centersById = allCenters.ToDictionary(c => c.Id, c => c.Name);
 
         var sb = new StringBuilder();
-        sb.AppendLine("📊 Extrato da caixinha (mês atual)");
-        sb.AppendLine($"👤 Titular: {person?.Name}");
-        sb.AppendLine($"📦 Caixinha: {center.Name}");
+        sb.AppendLine("📊 *Extrato da caixinha (mês atual)*");
+        sb.AppendLine($"👤 Titular: *{personName}*");
+        sb.AppendLine($"📦 Caixinha: *{center.Name}*");
         sb.AppendLine();
-        sb.AppendLine($"💰 Saldo atual da caixinha: R$ {balance:N2}");
+        sb.AppendLine($"💰 Saldo atual da caixinha: *R$ {balance:N2}*");
         sb.AppendLine();
 
         // --- DESPESAS ---
 
         if (!monthExpenses.Any())
         {
-            sb.AppendLine("🧾 Despesas no mês:\n");
+            sb.AppendLine("🧾 *Despesas no mês:*");
+            sb.AppendLine();
             sb.AppendLine("Nenhuma despesa registrada para esta caixinha neste mês.");
         }
         else
         {
-            sb.AppendLine("🧾 Despesas no mês:\n");
+            sb.AppendLine("🧾 *Despesas no mês:*\n");
 
             foreach (var tx in monthExpenses)
             {
@@ -267,13 +314,12 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
 
                 var dateLocal = tx.TransactionDate.ToLocalTime();
 
-                sb.AppendLine(
-                    $"- R$ {tx.Amount:N2} | {desc} | {dateLocal:dd/MM/yyyy}");
+                sb.AppendLine($"- R$ {tx.Amount:N2} | {desc} | {dateLocal:dd/MM/yyyy}");
             }
 
             var totalExpenses = monthExpenses.Sum(t => t.Amount);
             sb.AppendLine();
-            sb.AppendLine($"💸 Total de despesas no mês: R$ {totalExpenses:N2}");
+            sb.AppendLine($"💸 *Total de despesas no mês:* R$ {totalExpenses:N2}");
         }
 
         // --- TRANSFERÊNCIAS INTERNAS ---
@@ -281,7 +327,7 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
         if (outgoingTransfers.Any() || incomingTransfers.Any())
         {
             sb.AppendLine();
-            sb.AppendLine("🔁 Transferências internas no mês:");
+            sb.AppendLine("🔁 *Transferências internas no mês:*");
             sb.AppendLine();
 
             foreach (var tx in outgoingTransfers)
@@ -292,8 +338,8 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
                     ? nameTarget
                     : "Salário Acumulado";
 
-                sb.AppendLine($"- R$ {tx.Amount:N2} | Transferência enviada para caixinha {targetName} | {dateLocal:dd/MM/yyyy}");
-                sb.AppendLine();
+                sb.AppendLine(
+                    $"- R$ {tx.Amount:N2} | Transferência enviada para caixinha {targetName} | {dateLocal:dd/MM/yyyy}");
             }
 
             foreach (var tx in incomingTransfers)
@@ -306,7 +352,6 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
 
                 sb.AppendLine(
                     $"- R$ {tx.Amount:N2} | Transferência recebida de caixinha {sourceName} | {dateLocal:dd/MM/yyyy}");
-                sb.AppendLine();
             }
 
             var totalExpenses = monthExpenses.Sum(t => t.Amount);
@@ -315,18 +360,165 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
             var totalOut = totalExpenses + totalTransfersOut;
 
             sb.AppendLine();
-            sb.AppendLine($"💸 Total de despesas no mês: R$ {totalExpenses:N2}");
-            sb.AppendLine($"🔼 Total transferido para outras caixinhas (saídas): R$ {totalTransfersOut:N2}");
-            sb.AppendLine($"🔽 Total recebido de outras caixinhas (entradas): R$ {totalTransfersIn:N2}");
+            sb.AppendLine($"💸 *Total de despesas no mês:* R$ {totalExpenses:N2}");
+            sb.AppendLine($"🔼 *Total transferido para outras caixinhas (saídas):* R$ {totalTransfersOut:N2}");
+            sb.AppendLine($"🔽 *Total recebido de outras caixinhas (entradas):* R$ {totalTransfersIn:N2}");
             sb.AppendLine();
-            sb.AppendLine($"📉 Total de saídas (despesas + transferências enviadas): R$ {totalOut:N2}");
+            sb.AppendLine($"📉 *Total de saídas (despesas + transferências enviadas):* R$ {totalOut:N2}");
         }
 
         await _telegramSender.SendMessageAsync(
             chatId,
             sb.ToString(),
             cancellationToken);
+    }
 
-        await _chatStateService.ClearAsync(chatId, cancellationToken);
+    // ===================== RELATÓRIO ESPECIAL INFRA =====================
+
+    private async Task HandleInfraMonthlyStatementAsync(
+        long chatId,
+        string personName,
+        CostCenter center,
+        CancellationToken cancellationToken)
+    {
+        var balance = await _transactionService.GetCostCenterBalanceAsync(center.Id, cancellationToken);
+
+        var now = DateTime.UtcNow;
+        var startOfMonth = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        var allTx = await _transactionService.GetAllAsync(cancellationToken);
+
+        // Todas as despesas da caixinha no mês
+        var monthExpenses = allTx
+            .Where(t =>
+                t.SourceCostCenterId == center.Id &&
+                t.TransactionType == "Expense" &&
+                t.TransactionDate >= startOfMonth &&
+                t.TransactionDate <= now)
+            .ToList();
+
+        // Templates (Internet, Energia, etc.)
+        var templates = await _expenseService.GetByCostCenterAsync(center.Id, cancellationToken);
+
+        // Monta um "summary" por template
+        var summaries = templates
+            .Select(t =>
+            {
+                var txForTemplate = monthExpenses
+                    .Where(tx =>
+                           (tx.CategoryId.HasValue && t.CategoryId.HasValue && tx.CategoryId == t.CategoryId)
+                           || string.Equals(tx.Description, t.Name, StringComparison.OrdinalIgnoreCase))
+                    .OrderBy(tx => tx.TransactionDate)
+                    .ToList();
+
+                var totalPaid = txForTemplate.Sum(tx => tx.Amount);
+                var expected = t.DefaultAmount ?? 0m;
+
+                return new
+                {
+                    Template = t,
+                    Transactions = txForTemplate,
+                    TotalPaid = totalPaid,
+                    Expected = expected
+                };
+            })
+            // primeiro quem teve pagamento (> 0), depois os zerados
+            .OrderBy(s => s.TotalPaid == 0 ? 1 : 0)
+            .ThenBy(s => s.Template.Name)
+            .ToList();
+
+        // 🔹 Pega todas as transações que NÃO caíram em nenhum template
+        var templatedTxIds = new HashSet<long>(
+            summaries.SelectMany(s => s.Transactions).Select(tx => tx.Id));
+
+        var untemplatedExpenses = monthExpenses
+            .Where(tx => !templatedTxIds.Contains(tx.Id))
+            .OrderBy(tx => tx.TransactionDate)
+            .ToList();
+
+        var sb = new StringBuilder();
+        sb.AppendLine("📊 Extrato da caixinha de Infra Mensal (mês atual)");
+        sb.AppendLine($"👤 Titular: {personName}");
+        sb.AppendLine($"📦 Caixinha: {center.Name}");
+        sb.AppendLine();
+        sb.AppendLine($"💰 Saldo atual da caixinha: R$ {balance:N2}");
+        sb.AppendLine();
+
+        decimal totalExpected = 0m;
+        decimal totalPaidAll = 0m;
+
+        // -------- Templates (com emoji) --------
+        foreach (var s in summaries)
+        {
+            totalExpected += s.Expected;
+            totalPaidAll += s.TotalPaid;
+
+            var comparisonText = BuildInfraComparisonText(s.Expected, s.TotalPaid, out var emoji);
+
+            sb.AppendLine($"- {s.Template.Name} | R$ {s.TotalPaid:N2} | {emoji}");
+            sb.AppendLine($"  (Esperado: R$ {s.Expected:N2})");
+
+            // Parcelas individuais
+            foreach (var tx in s.Transactions)
+            {
+                var dateLocal = tx.TransactionDate.ToLocalTime();
+                var desc = string.IsNullOrWhiteSpace(tx.Description) ? "Sem descrição" : tx.Description;
+
+                sb.AppendLine($"  └ R$ {tx.Amount:N2} | {desc} | {dateLocal:dd/MM/yyyy}");
+            }
+
+            sb.AppendLine();
+        }
+
+        // -------- Despesas sem template --------
+        if (untemplatedExpenses.Any())
+        {
+            var totalUntemplated = untemplatedExpenses.Sum(tx => tx.Amount);
+            totalPaidAll += totalUntemplated;
+
+            sb.AppendLine("🧾 Despesas sem template:");
+            sb.AppendLine();
+
+            foreach (var tx in untemplatedExpenses)
+            {
+                var dateLocal = tx.TransactionDate.ToLocalTime();
+                var desc = string.IsNullOrWhiteSpace(tx.Description) ? "Sem descrição" : tx.Description;
+
+                sb.AppendLine($"- R$ {tx.Amount:N2} | {desc} | {dateLocal:dd/MM/yyyy}");
+            }
+
+            sb.AppendLine();
+        }
+
+        sb.AppendLine("━━━━━━━━━━━━━━");
+        sb.AppendLine($"📌 Total esperado no mês: R$ {totalExpected:N2}");
+        sb.AppendLine($"📌 Total pago no mês: R$ {totalPaidAll:N2}");
+
+        var overallText = BuildInfraComparisonText(totalExpected, totalPaidAll, out var overallEmoji);
+        sb.AppendLine($"{overallEmoji} {overallText}");
+
+        await _telegramSender.SendMessageAsync(
+            chatId,
+            sb.ToString(),
+            cancellationToken);
+    }
+
+    // Helper comparação esperado x pago
+    private static string BuildInfraComparisonText(decimal expected, decimal paid, out string emoji)
+    {
+        if (expected <= 0)
+        {
+            emoji = "ℹ️";
+            return "Valor esperado não configurado. Comparação não disponível.";
+        }
+
+        if (paid <= expected)
+        {
+            emoji = "🟢";
+            return "Despesa dentro ou abaixo do valor esperado para este tipo de gasto.";
+        }
+
+        emoji = "🔴";
+        return "Atenção: a despesa ficou acima do valor esperado para este tipo de gasto.";
     }
 }
