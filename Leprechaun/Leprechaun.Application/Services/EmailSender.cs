@@ -10,7 +10,7 @@ public class EmailSender : IEmailSender
     private readonly List<string> _recipients = new()
     {
         "antoniojunior159@gmail.com",
-        "antoniorocha.dev@outlook.com"
+        "catarina.braga.design@gmail.com"
     };
 
     private readonly string _smtpHost;
@@ -46,13 +46,13 @@ public class EmailSender : IEmailSender
             using var message = new MailMessage
             {
                 From = new MailAddress(_smtpUser, "Leprechaun Finance Bot"),
-                Subject = $"Relatório de Patrimônio - {start:dd/MM/yyyy} a {end:dd/MM/yyyy}",
+                Subject = $"Relatório de Despesas - {start:dd/MM/yyyy} a {end:dd/MM/yyyy}",
                 Body = "Segue em anexo o relatório mensal de despesas!",
             };
 
             message.To.Add(recipient);
             message.Attachments.Add(
-                new Attachment(new MemoryStream(pdfBytes), "relatorio-patrimonio.pdf"));
+                new Attachment(new MemoryStream(pdfBytes), "relatorio-despesas.pdf"));
 
             await client.SendMailAsync(message, cancellationToken);
         }

@@ -57,7 +57,7 @@ public class PatrimonyPdfEmailReportFlowService : IChatFlow
             cancellationToken);
 
         // 2) PDF
-        var title = $"Relatório de Patrimônio ({startOfMonth:dd/MM/yyyy} - {end:dd/MM/yyyy})";
+        var title = $"Relatório de Despesas ({startOfMonth:dd/MM/yyyy} - {end:dd/MM/yyyy})";
         var pdfBytes = _pdfService.GeneratePatrimonyReportPdf(title, data);
 
         // 3) Envio por e-mail

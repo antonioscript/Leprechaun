@@ -152,7 +152,7 @@ col.Item().Column(sec =>
 
                         r.ConstantColumn(140)
                             .AlignRight()
-                            .Text($"R$ {data.GeneralOutflows:N2}")
+                            .Text($"R$ {totalDespesasGeral:N2}")
                             .FontSize(11);
                     });
                 });

@@ -22,7 +22,7 @@ public class EmailTestController : ControllerBase
         var end = new DateTime(2025, 12, 21);
 
         // PDF fake só p/ testar anexo (depois você troca pelo PdfService real)
-        var fakeText = "Relatório de Patrimônio (teste)\nGerado pelo Leprechaun Bot.";
+        var fakeText = "Relatório de Despesas (teste)\nGerado pelo Leprechaun Bot.";
         var pdfBytes = Encoding.UTF8.GetBytes(fakeText); // funciona como anexo mesmo assim
 
         await _emailSender.SendPatrimonyReportAsync(
