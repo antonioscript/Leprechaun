@@ -23,5 +23,6 @@ public enum TelegramCommand
     Patrimonio,
     Imagem,
     Version,
-    Producao
+    Producao,
+    SaldoSalarios
 }

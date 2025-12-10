@@ -21,7 +21,7 @@ public static class TextsSalaryIncome
     }
 
     public static string AskSalaryAmount(string institutionName) =>
-        $"Informe o valor recebido do salário na instituição **{institutionName}**.\n"; 
+        $"Informe o valor recebido do salário na instituição {institutionName}.\n"; 
 
     public static string SalaryReceipt( Institution institution, decimal amount, DateTime date, decimal totalAccumulated)
     {

@@ -66,6 +66,9 @@ public static class BotTexts
        "💡 Para registrar outra despesa do salário acumulado, você pode usar:\n\n" +
        "/registrar_despesa_sal_acml - Registrar outra despesa do salário acumulado\n";
 
+    public static string AfterPostSalary() =>
+       "💡 Para visualizar os salários recebidos no mês, você pode usar /saldo_salarios\n\n";
+
     public static string HintAfterTransferBetweenCostCenters() =>
         "💡 Para acompanhar suas caixinhas, você pode:\n\n" +
         "/saldo_caixinhas - Ver o saldo das caixinhas\n" +

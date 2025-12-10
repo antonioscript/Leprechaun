@@ -218,5 +218,10 @@ public class SalaryIncomeFlowService : IChatFlow
             total);
 
         await _telegramSender.SendMessageAsync(chatId, reply, cancellationToken);
+
+        await _telegramSender.SendMessageAsync(
+            chatId,
+            BotTexts.AfterPostSalary(),
+            cancellationToken);
     }
 }
