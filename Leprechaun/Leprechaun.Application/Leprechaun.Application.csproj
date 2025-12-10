@@ -15,4 +15,8 @@
       <PackageReference Include="QuestPDF" Version="2025.12.0-alpha4" />
     </ItemGroup>
 
+    <ItemGroup>
+      <EmbeddedResource Include="Assets/leprechaun-logo.png" />
+    </ItemGroup>
+
 </Project>

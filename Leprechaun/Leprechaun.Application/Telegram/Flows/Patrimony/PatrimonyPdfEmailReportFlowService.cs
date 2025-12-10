@@ -1,4 +1,3 @@
-// Leprechaun.Application/Telegram/Flows/Patrimony/PatrimonyPdfEmailReportFlowService.cs
 using Leprechaun.Application.Telegram;
 using Leprechaun.Domain.Entities;
 using Leprechaun.Domain.Interfaces;
@@ -37,33 +36,31 @@ public class PatrimonyPdfEmailReportFlowService : IChatFlow
         if (command != TelegramCommand.RelatorioPatrimonioPdfEmail)
             return false;
 
-        // comando “stateless”
         await _chatStateService.ClearAsync(chatId, cancellationToken);
 
         var now = DateTime.UtcNow;
         var startOfMonth = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
         var end = now;
 
-        // 🔹 Mensagem curta só para feedback
         await _telegramSender.SendMessageAsync(
             chatId,
-            $"📧 Gerando relatório de patrimônio em PDF e enviando por e-mail...\n" +
+            $"Gerando relatório de patrimônio em PDF e enviando por e-mail...\n" +
             $"Período: {startOfMonth:dd/MM/yyyy} - {end:dd/MM/yyyy}",
             cancellationToken);
 
-        // 1) Monta o texto do relatório
-        var reportText = await _patrimonyReportService.BuildPatrimonyReportAsync(
+        // 1) Dados
+        var data = await _patrimonyReportService.BuildPatrimonyReportDataAsync(
             startOfMonth,
             end,
             cancellationToken);
 
-        // 2) Gera o PDF
+        // 2) PDF
         var title = $"Relatório de Patrimônio ({startOfMonth:dd/MM/yyyy} - {end:dd/MM/yyyy})";
-        var pdfBytes = _pdfService.GeneratePatrimonyReportPdf(title, reportText);
+        var pdfBytes = _pdfService.GeneratePatrimonyReportPdf(title, data);
 
+        // 3) Envio por e-mail
         try
         {
-            // 3) Envia por e-mail
             await _emailSender.SendPatrimonyReportAsync(
                 chatId,
                 startOfMonth,
@@ -73,19 +70,15 @@ public class PatrimonyPdfEmailReportFlowService : IChatFlow
 
             await _telegramSender.SendMessageAsync(
                 chatId,
-                "✅ Relatório enviado com sucesso para os e-mails padrão.",
+                "Relatório enviado com sucesso para os e-mails padrão.",
                 cancellationToken);
         }
         catch (Exception)
         {
-            // Se algo der ruim no SMTP, pelo menos você fica sabendo no Telegram
             await _telegramSender.SendMessageAsync(
                 chatId,
-                "⚠️ Ocorreu um erro ao enviar o relatório por e-mail. " +
-                "Veja os logs da aplicação para mais detalhes.",
+                "Ocorreu um erro ao enviar o relatório por e-mail. Verifique os logs.",
                 cancellationToken);
-
-            // se quiser logar com ILogger, aqui é o lugar
         }
 
         return true;
