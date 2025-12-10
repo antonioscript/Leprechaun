@@ -68,6 +68,9 @@ public static class TelegramCommandParser
 
         if (text.StartsWith("/cancelar", StringComparison.OrdinalIgnoreCase))
             return TelegramCommand.Cancelar;
+        
+        if (text.StartsWith("/relatorio_patrimonio", StringComparison.OrdinalIgnoreCase))
+            return TelegramCommand.RelatorioPatrimonio;
 
         if (text.StartsWith("/version", StringComparison.OrdinalIgnoreCase))
             return TelegramCommand.Version;

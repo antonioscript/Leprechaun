@@ -89,6 +89,7 @@ builder.Services.AddScoped<IChatFlow, SalaryAccumulatedMonthlyStatementFlowServi
 builder.Services.AddScoped<IChatFlow, SupportSuggestionFlowService>();
 builder.Services.AddScoped<IChatFlow, PatrimonyFlowService>();
 builder.Services.AddScoped<IChatFlow, SalaryMonthlyIncomeReportFlowService>();
+builder.Services.AddScoped<IChatFlow, PatrimonyMonthlyReportFlowService>();
 
 
 var app = builder.Build();
