@@ -25,5 +25,6 @@ public enum TelegramCommand
     Version,
     Producao,
     SaldoSalarios,
-    RelatorioPatrimonio,
+    RelatorioPatrimonio, 
+    RelatorioPatrimonioPdfEmail
 }

@@ -71,6 +71,9 @@ public static class TelegramCommandParser
         
         if (text.StartsWith("/relatorio_patrimonio", StringComparison.OrdinalIgnoreCase))
             return TelegramCommand.RelatorioPatrimonio;
+        
+        if (text.StartsWith("/relatorio_email", StringComparison.OrdinalIgnoreCase))
+            return TelegramCommand.RelatorioPatrimonioPdfEmail;
 
         if (text.StartsWith("/version", StringComparison.OrdinalIgnoreCase))
             return TelegramCommand.Version;
