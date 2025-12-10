@@ -35,7 +35,7 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "Leprechaun.API",
-        Version = "1.1.0",
+        Version = "1.1.2",
     });
 });
 
