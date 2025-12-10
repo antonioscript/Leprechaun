@@ -150,8 +150,8 @@ public class MonthlyReportPdfService : IMonthlyReportPdfService
 
                                 if (cc.Expenses.Any())
                                 {
-                                    // tabela de despesas (sem o texto "Despesas")
-                                    box.Item().PaddingTop(4).Column(list =>
+                                    // 🟩 Espaço entre nome → tabela
+                                    box.Item().PaddingTop(6).Column(list =>
                                     {
                                         int index = 0;
                                         foreach (var exp in cc.Expenses.OrderBy(e => e.Date))
@@ -164,8 +164,8 @@ public class MonthlyReportPdfService : IMonthlyReportPdfService
                                                 .Padding(8)
                                                 .Row(row =>
                                                 {
-                                                    row.RelativeColumn().Text(
-                                                        $"{exp.Date:dd/MM/yyyy}  |  {exp.Description}");
+                                                    row.RelativeColumn()
+                                                        .Text($"{exp.Date:dd/MM/yyyy}  |  {exp.Description}");
 
                                                     row.ConstantColumn(110)
                                                         .AlignRight()
@@ -175,14 +175,13 @@ public class MonthlyReportPdfService : IMonthlyReportPdfService
                                     });
                                 }
 
-                                // total fora da tabela
-                                box.Item().PaddingTop(4)
+                                // 🟩 Espaço entre tabela → total
+                                box.Item().PaddingTop(6)
                                     .Text($"Total de despesas: R$ {cc.TotalExpenses:N2}")
                                     .FontSize(12)
                                     .Bold();
                             });
                         }
-
                         var totalCenters = data.CostCenters.Sum(c => c.TotalExpenses);
                         sec.Item().PaddingTop(12)
                             .Text($"Total de despesas em caixinhas: R$ {totalCenters:N2}")

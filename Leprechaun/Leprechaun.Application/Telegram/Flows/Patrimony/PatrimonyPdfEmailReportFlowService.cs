@@ -69,11 +69,14 @@ public class PatrimonyPdfEmailReportFlowService : IChatFlow
                 end,
                 pdfBytes,
                 cancellationToken);
-
+            
+            /*
             await _telegramSender.SendMessageAsync(
                 chatId,
                 "Relatório enviado com sucesso para os e-mails padrão.",
                 cancellationToken);
+                
+            */
         }
         catch (Exception)
         {
