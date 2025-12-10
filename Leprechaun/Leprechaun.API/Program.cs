@@ -20,6 +20,7 @@ using Leprechaun.Domain.Interfaces;
 using Leprechaun.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,6 +43,8 @@ builder.Services.AddSwaggerGen(c =>
 
 var connectionString = builder.Configuration.GetConnectionString("LeprechaunDb");
 
+QuestPDF.Settings.License = LicenseType.Community;
+
 builder.Services.AddDbContext<LeprechaunDbContext>(options =>
 {
     options.UseNpgsql(connectionString);
@@ -58,7 +61,6 @@ builder.Services.AddScoped<IInstitutionRepository, InstitutionRepository>();
 builder.Services.AddScoped<ICostCenterRepository, CostCenterRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IFinanceTransactionRepository, FinanceTransactionRepository>();
-builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 builder.Services.AddScoped<IChatStateRepository, ChatStateRepository>();
 builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
 builder.Services.AddScoped<ISupportSuggestionRepository, SupportSuggestionRepository>();
@@ -73,6 +75,14 @@ builder.Services.AddScoped<IFinanceTransactionService, FinanceTransactionService
 builder.Services.AddScoped<IPersonService, PersonService>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
 builder.Services.AddScoped<ISupportSuggestionService, SupportSuggestionService>();
+
+// Relatórios (texto + PDF)
+builder.Services.AddScoped<IPatrimonyReportService, PatrimonyReportService>();
+builder.Services.AddScoped<IMonthlyReportPdfService, MonthlyReportPdfService>();
+
+// Envio de Email
+builder.Services.AddTransient<IEmailSender, EmailSender>();
+
 
 
 //Flows
@@ -90,6 +100,7 @@ builder.Services.AddScoped<IChatFlow, SupportSuggestionFlowService>();
 builder.Services.AddScoped<IChatFlow, PatrimonyFlowService>();
 builder.Services.AddScoped<IChatFlow, SalaryMonthlyIncomeReportFlowService>();
 builder.Services.AddScoped<IChatFlow, PatrimonyMonthlyReportFlowService>();
+builder.Services.AddScoped<IChatFlow, PatrimonyPdfEmailReportFlowService>();
 
 
 var app = builder.Build();

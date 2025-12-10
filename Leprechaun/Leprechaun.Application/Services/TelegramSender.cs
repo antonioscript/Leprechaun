@@ -123,4 +123,6 @@ public class TelegramSender : ITelegramSender
                 $"Telegram sendPhoto failed. StatusCode={(int)response.StatusCode}, Body={responseBody}");
         }
     }
+
+
 }

@@ -13,4 +13,6 @@ public interface ITelegramSender
         string filePath,
         string? caption = null,
         CancellationToken cancellationToken = default);
+    
+    
 }

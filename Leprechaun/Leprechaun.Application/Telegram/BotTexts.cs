@@ -93,7 +93,7 @@ public static class BotTexts
 
 
     public static string VersionNote() =>
-    "🟩 Release Notes — Versão 1.2.1\n\n" +
+    "🟩 Release Notes — Versão 1.3.1\n\n" +
     "Novas Features 🚀\n" +
     "• Atualização: Meta alterada para R$ 500.000, 00\n no comando /saldo_salario_acumulado" +
     "• Atualização: As Caixinhas agora tem 3 tipos (Default, Proibida Despesa Direta e Infra Mensal).\n" +
