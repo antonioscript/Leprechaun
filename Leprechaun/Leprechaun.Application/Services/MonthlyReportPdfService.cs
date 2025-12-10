@@ -198,7 +198,7 @@ col.Item().Column(sec =>
 
                             // total de despesas do salário acumulado logo abaixo da tabela
                             sec.Item().PaddingTop(6)
-                                .Text($"Total de despesas do salário acumulado: R$ {totalDespesasSalario:N2}")
+                                .Text($"Total: R$ {totalDespesasSalario:N2}")
                                 .FontSize(11)
                                 .Bold();
                         }
@@ -246,7 +246,7 @@ col.Item().Column(sec =>
 
                                 // espaço entre tabela e total da caixinha
                                 sec.Item().PaddingTop(6)
-                                    .Text($"Total de despesas: R$ {cc.TotalExpenses:N2}")
+                                    .Text($"Total: R$ {cc.TotalExpenses:N2}")
                                     .FontSize(11)
                                     .Bold();
                             }
