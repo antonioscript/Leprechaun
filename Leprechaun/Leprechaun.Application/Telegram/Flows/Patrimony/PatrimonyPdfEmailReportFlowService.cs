@@ -41,12 +41,14 @@ public class PatrimonyPdfEmailReportFlowService : IChatFlow
         var now = DateTime.UtcNow;
         var startOfMonth = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
         var end = now;
-
+        
+        /*
         await _telegramSender.SendMessageAsync(
             chatId,
             $"Gerando relatório de patrimônio em PDF e enviando por e-mail...\n" +
             $"Período: {startOfMonth:dd/MM/yyyy} - {end:dd/MM/yyyy}",
             cancellationToken);
+        */
 
         // 1) Dados
         var data = await _patrimonyReportService.BuildPatrimonyReportDataAsync(

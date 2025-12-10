@@ -103,13 +103,13 @@ public class MonthlyReportPdfService : IMonthlyReportPdfService
                                 .FontSize(13)
                                 .Bold();
 
-                            // estilo extrato: linhas cinza / branco alternadas
+                            // linhas estilo extrato
                             sec.Item().Column(list =>
                             {
                                 int index = 0;
                                 foreach (var exp in data.SalaryExpenses.OrderBy(e => e.Date))
                                 {
-                                    var bg = index % 2 == 0 ? "#FAFAFA" : "#EDEDED";
+                                    var bg = index % 2 == 0 ? "#F0F0F0" : "#DADADA";
                                     index++;
 
                                     list.Item()
@@ -141,46 +141,50 @@ public class MonthlyReportPdfService : IMonthlyReportPdfService
 
                         foreach (var cc in data.CostCenters.OrderBy(c => c.Name))
                         {
-                            sec.Item().PaddingTop(12).Text(cc.Name)
-                                .FontSize(14)
-                                .Bold();
-
-                            sec.Item().Text($"Total de despesas: R$ {cc.TotalExpenses:N2}")
-                                .FontSize(12);
-
-                            if (cc.Expenses.Any())
+                            sec.Item().PaddingTop(12).Column(box =>
                             {
-                                sec.Item().PaddingTop(4).Text("Despesas")
-                                    .FontSize(13)
+                                // Título da caixinha
+                                box.Item().Text(cc.Name)
+                                    .FontSize(14)
                                     .Bold();
 
-                                sec.Item().Column(list =>
+                                if (cc.Expenses.Any())
                                 {
-                                    int index = 0;
-                                    foreach (var exp in cc.Expenses.OrderBy(e => e.Date))
+                                    // tabela de despesas (sem o texto "Despesas")
+                                    box.Item().PaddingTop(4).Column(list =>
                                     {
-                                        var bg = index % 2 == 0 ? "#FAFAFA" : "#EDEDED";
-                                        index++;
+                                        int index = 0;
+                                        foreach (var exp in cc.Expenses.OrderBy(e => e.Date))
+                                        {
+                                            var bg = index % 2 == 0 ? "#F0F0F0" : "#DADADA";
+                                            index++;
 
-                                        list.Item()
-                                            .Background(bg)
-                                            .Padding(8)
-                                            .Row(row =>
-                                            {
-                                                row.RelativeColumn().Text(
-                                                    $"{exp.Date:dd/MM/yyyy}  |  {exp.Description}");
+                                            list.Item()
+                                                .Background(bg)
+                                                .Padding(8)
+                                                .Row(row =>
+                                                {
+                                                    row.RelativeColumn().Text(
+                                                        $"{exp.Date:dd/MM/yyyy}  |  {exp.Description}");
 
-                                                row.ConstantColumn(110)
-                                                    .AlignRight()
-                                                    .Text($"R$ {exp.Amount:N2}");
-                                            });
-                                    }
-                                });
-                            }
+                                                    row.ConstantColumn(110)
+                                                        .AlignRight()
+                                                        .Text($"R$ {exp.Amount:N2}");
+                                                });
+                                        }
+                                    });
+                                }
+
+                                // total fora da tabela
+                                box.Item().PaddingTop(4)
+                                    .Text($"Total de despesas: R$ {cc.TotalExpenses:N2}")
+                                    .FontSize(12)
+                                    .Bold();
+                            });
                         }
 
                         var totalCenters = data.CostCenters.Sum(c => c.TotalExpenses);
-                        sec.Item().PaddingTop(10)
+                        sec.Item().PaddingTop(12)
                             .Text($"Total de despesas em caixinhas: R$ {totalCenters:N2}")
                             .FontSize(13)
                             .Bold();
