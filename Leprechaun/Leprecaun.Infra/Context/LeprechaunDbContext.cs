@@ -155,6 +155,7 @@ public class LeprechaunDbContext : DbContext
         entity.Property(e => e.DueDay).HasColumnName("dueday");
         entity.Property(e => e.CategoryId).HasColumnName("categoryid");
         entity.Property(e => e.IsActive).HasColumnName("isactive").HasDefaultValue(true);
+        entity.Property(e => e.RequiresCustomDescription).IsRequired().HasColumnName("requirescustomdescription");
 
         entity.HasOne(e => e.CostCenter)
             .WithMany()

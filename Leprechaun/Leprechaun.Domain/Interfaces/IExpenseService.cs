@@ -9,6 +9,7 @@ public interface IExpenseService
 
     // ?? NOVO: buscar templates por caixinha (InfraMensal usa isso)
     Task<List<Expense>> GetByCostCenterAsync(int costCenterId, CancellationToken cancellationToken = default);
+    Task<List<Expense>> GetByCostCenterNotDescriptionAsync(int costCenterId, CancellationToken cancellationToken = default);
 
     Task<Expense> CreateAsync(Expense expense, CancellationToken cancellationToken = default);
     Task UpdateAsync(Expense expense, CancellationToken cancellationToken = default);

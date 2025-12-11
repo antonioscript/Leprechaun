@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Leprechaun.Application.Telegram;
-using Leprechaun.Domain.Entities;
+﻿using Leprechaun.Domain.Entities;
 using Leprechaun.Domain.Enums;
 using Leprechaun.Domain.Interfaces;
+using System.Text;
 
 namespace Leprechaun.Application.Telegram.Flows.CostCenterStatement;
 
@@ -287,24 +283,24 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
         var centersById = allCenters.ToDictionary(c => c.Id, c => c.Name);
 
         var sb = new StringBuilder();
-        sb.AppendLine("📊 *Extrato da caixinha (mês atual)*");
-        sb.AppendLine($"👤 Titular: *{personName}*");
-        sb.AppendLine($"📦 Caixinha: *{center.Name}*");
+        sb.AppendLine("📊 Extrato da caixinha (mês atual)");
+        sb.AppendLine($"👤 Titular: {personName}");
+        sb.AppendLine($"📦 Caixinha: {center.Name}");
         sb.AppendLine();
-        sb.AppendLine($"💰 Saldo atual da caixinha: *R$ {balance:N2}*");
+        sb.AppendLine($"💰 Saldo atual da caixinha: R$ {balance:N2}");
         sb.AppendLine();
 
         // --- DESPESAS ---
 
         if (!monthExpenses.Any())
         {
-            sb.AppendLine("🧾 *Despesas no mês:*");
+            sb.AppendLine("🧾 Despesas no mês:");
             sb.AppendLine();
             sb.AppendLine("Nenhuma despesa registrada para esta caixinha neste mês.");
         }
         else
         {
-            sb.AppendLine("🧾 *Despesas no mês:*\n");
+            sb.AppendLine("🧾 Despesas no mês:\n");
 
             foreach (var tx in monthExpenses)
             {
@@ -319,7 +315,7 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
 
             var totalExpenses = monthExpenses.Sum(t => t.Amount);
             sb.AppendLine();
-            sb.AppendLine($"💸 *Total de despesas no mês:* R$ {totalExpenses:N2}");
+            sb.AppendLine($"💸 Total de despesas no mês: R$ {totalExpenses:N2}");
         }
 
         // --- TRANSFERÊNCIAS INTERNAS ---
@@ -327,7 +323,7 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
         if (outgoingTransfers.Any() || incomingTransfers.Any())
         {
             sb.AppendLine();
-            sb.AppendLine("🔁 *Transferências internas no mês:*");
+            sb.AppendLine("🔁 Transferências internas no mês:");
             sb.AppendLine();
 
             foreach (var tx in outgoingTransfers)
@@ -360,11 +356,11 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
             var totalOut = totalExpenses + totalTransfersOut;
 
             sb.AppendLine();
-            sb.AppendLine($"💸 *Total de despesas no mês:* R$ {totalExpenses:N2}");
-            sb.AppendLine($"🔼 *Total transferido para outras caixinhas (saídas):* R$ {totalTransfersOut:N2}");
-            sb.AppendLine($"🔽 *Total recebido de outras caixinhas (entradas):* R$ {totalTransfersIn:N2}");
+            sb.AppendLine($"💸 Total de despesas no mês: R$ {totalExpenses:N2}");
+            sb.AppendLine($"🔼 Total transferido para outras caixinhas (saídas): R$ {totalTransfersOut:N2}");
+            sb.AppendLine($"🔽 Total recebido de outras caixinhas (entradas): R$ {totalTransfersIn:N2}");
             sb.AppendLine();
-            sb.AppendLine($"📉 *Total de saídas (despesas + transferências enviadas):* R$ {totalOut:N2}");
+            sb.AppendLine($"📉 Total de saídas (despesas + transferências enviadas): R$ {totalOut:N2}");
         }
 
         await _telegramSender.SendMessageAsync(
@@ -398,7 +394,8 @@ public class CostCenterMonthlyStatementFlowService : IChatFlow
             .ToList();
 
         // Templates (Internet, Energia, etc.)
-        var templates = await _expenseService.GetByCostCenterAsync(center.Id, cancellationToken);
+        var templates = await _expenseService.GetByCostCenterNotDescriptionAsync(center.Id,cancellationToken);
+
 
         // Monta um "summary" por template
         var summaries = templates

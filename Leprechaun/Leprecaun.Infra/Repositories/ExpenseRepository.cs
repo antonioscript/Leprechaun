@@ -29,6 +29,12 @@ public class ExpenseRepository : IExpenseRepository
             .Where(e => e.CostCenterId == costCenterId)
             .ToListAsync(cancellationToken);
 
+    public Task<List<Expense>> GetByCostCenterNotDescriptionAsync(int costCenterId, CancellationToken cancellationToken = default)
+        => _context.Expenses
+            .AsNoTracking()
+            .Where(e => e.CostCenterId == costCenterId && e.RequiresCustomDescription == false)
+            .ToListAsync(cancellationToken);
+
     public async Task AddAsync(Expense expense, CancellationToken cancellationToken = default)
     {
         await _context.Expenses.AddAsync(expense, cancellationToken);
