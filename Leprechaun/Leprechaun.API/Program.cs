@@ -75,6 +75,7 @@ builder.Services.AddScoped<IFinanceTransactionService, FinanceTransactionService
 builder.Services.AddScoped<IPersonService, PersonService>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
 builder.Services.AddScoped<ISupportSuggestionService, SupportSuggestionService>();
+builder.Services.AddScoped<IJobService, JobService>();
 
 // Relatórios (texto + PDF)
 builder.Services.AddScoped<IPatrimonyReportService, PatrimonyReportService>();
@@ -82,7 +83,6 @@ builder.Services.AddScoped<IMonthlyReportPdfService, MonthlyReportPdfService>();
 
 // Envio de Email
 builder.Services.AddTransient<IEmailSender, EmailSender>();
-
 
 
 //Flows
