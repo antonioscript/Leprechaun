@@ -9,8 +9,8 @@ public class EmailSender : IEmailSender
 {
     private readonly List<string> _recipients = new()
     {
-        "antoniojunior159@gmail.com",
-        "catarina.braga.design@gmail.com"
+        "antoniojunior159@gmail.com"
+        //"catarina.braga.design@gmail.com"
     };
 
     private readonly string _smtpHost;

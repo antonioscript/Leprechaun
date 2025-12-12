@@ -53,6 +53,10 @@ public static class FlowStates
     //Sugestões
     public const string SupportSuggestionAwaitingDescription = "SupportSuggestionAwaitingDescription";
 
+    //
+
+    public const string None = "None";
+
 
 
 }
