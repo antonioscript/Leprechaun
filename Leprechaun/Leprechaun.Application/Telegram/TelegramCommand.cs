@@ -26,5 +26,7 @@ public enum TelegramCommand
     Producao,
     SaldoSalarios,
     RelatorioPatrimonio, 
-    RelatorioPatrimonioPdfEmail
+    RelatorioPatrimonioPdfEmail,
+    NotificationPepsiSalaryFriday,
+    NotificationSalaryBiweekly
 }
