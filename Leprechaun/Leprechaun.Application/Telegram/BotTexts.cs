@@ -64,7 +64,8 @@ public static class BotTexts
 
     public static string HintAfterSalaryExpense() =>
        "💡 Para registrar outra despesa do salário acumulado, você pode usar:\n\n" +
-       "/registrar_despesa_sal_acml - Registrar outra despesa do salário acumulado\n";
+       "/registrar_despesa_sal_acml - Registrar outra despesa do salário acumulado ou \n" +
+       "/extrato_salario_acumulado_mes - Para visualizar o extrato do salário acumulado\n";
 
     public static string AfterPostSalary() =>
        "💡 Para visualizar os salários recebidos no mês, você pode usar /saldo_salarios\n\n";
@@ -93,15 +94,11 @@ public static class BotTexts
 
 
     public static string VersionNote() =>
-    "🟩 Release Notes — Versão 1.3.1\n\n" +
+    "🟩 Release Notes — Versão 1.4.4\n\n" +
     "Novas Features 🚀\n" +
-    "• Atualização: Meta alterada para R$ 500.000, 00\n no comando /saldo_salario_acumulado" +
-    "• Atualização: As Caixinhas agora tem 3 tipos (Default, Proibida Despesa Direta e Infra Mensal).\n" +
-    "• Nova regra: Não se pode cadastrar uma despesa de uma caixinha que foi marcada como 'Proibida Despesa Direta' .\n" +
-    "• Nova Funcionalidade: Nas despesas mensais de Infra aparecem a lista de despesas pré-cadastradas.\n" +
-    "• Nova Funcionalidade: No relatório da Caixinha de Infra Mensal apresenta particularidades diferentes comparadas com outras caixinhas .\n" +
-    "• Novo comando: /saldo_salarios para visualizar todas os recebimentos de salário no mês.\n\n" +
-    "Versão: 1.2.1\n" +
+    "• Atualização: Caixinha de Infra(Anual), Lazer Antônio e Lazer Catarina, marcadas como Proibidas de despesa Direta. Dessa forma, não haverá eqívocos de despesas direto dessas caixinhas.\n" +
+    "• Atualização: Inserção do tipo de despesa 'Outros' para despesas que não possuem um template pré-cadastrado\n" +
+    "Versão: 1.4.4\n" +
     "— Leprechaun Bot";
 
 

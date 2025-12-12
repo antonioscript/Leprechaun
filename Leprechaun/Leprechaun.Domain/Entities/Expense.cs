@@ -25,4 +25,6 @@ public class Expense
     public Category? Category { get; set; }
 
     public bool IsActive { get; set; } = true;
+
+    public bool RequiresCustomDescription { get; set; }
 }
