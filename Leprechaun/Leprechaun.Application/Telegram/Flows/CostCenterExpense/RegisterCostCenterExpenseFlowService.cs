@@ -45,7 +45,8 @@ public class RegisterCostCenterExpenseFlowService : IChatFlow
             state.State == FlowStates.CostCenterExpenseAwaitingDescription ||
             state.State == FlowStates.CostCenterExpenseAwaitingInfraTemplate ||
             state.State == FlowStates.CostCenterExpenseAwaitingInfraConfirmOrAdjust ||
-            state.State == FlowStates.CostCenterExpenseAwaitingInfraCustomAmount)
+            state.State == FlowStates.CostCenterExpenseAwaitingInfraCustomAmount ||
+            state.State == FlowStates.CostCenterExpenseAwaitingInfraDescription) // NOVO
         {
             await HandleOngoingFlowAsync(chatId, userText, state, cancellationToken);
             return true;
@@ -71,7 +72,7 @@ public class RegisterCostCenterExpenseFlowService : IChatFlow
         state.TempPersonId = null;
         state.TempSourceCostCenterId = null;
         state.TempAmount = null;
-        state.TempInstitutionId = null; // vamos usar para guardar o template (Expense.Id) em Infra
+        state.TempInstitutionId = null; // usado p/ guardar template (Expense.Id) em Infra
         state.UpdatedAt = DateTime.UtcNow;
 
         await _chatStateService.SaveAsync(state, cancellationToken);
@@ -134,6 +135,10 @@ public class RegisterCostCenterExpenseFlowService : IChatFlow
 
             case FlowStates.CostCenterExpenseAwaitingInfraCustomAmount:
                 await HandleInfraCustomAmountAsync(chatId, userText, state, cancellationToken);
+                break;
+
+            case FlowStates.CostCenterExpenseAwaitingInfraDescription: // NOVO
+                await HandleInfraDescriptionAsync(chatId, userText, state, cancellationToken);
                 break;
         }
     }
@@ -456,7 +461,7 @@ public class RegisterCostCenterExpenseFlowService : IChatFlow
 
         var expected = template.DefaultAmount ?? 0m;
 
-        // Guardar o templateId para o caso de "Ajustar valor"
+        // Guardar o templateId para o caso de "Ajustar valor" / descrição custom
         state.TempInstitutionId = template.Id;
         state.State = FlowStates.CostCenterExpenseAwaitingInfraConfirmOrAdjust;
         state.UpdatedAt = DateTime.UtcNow;
@@ -538,34 +543,53 @@ public class RegisterCostCenterExpenseFlowService : IChatFlow
 
         if (isConfirm)
         {
-            // Usa diretamente o valor esperado
+            // Se esse template exige descrição customizada (ex.: "Outros"),
+            // guarda o valor e vai pedir a descrição antes de registrar.
+            if (template.RequiresCustomDescription)
+            {
+                state.TempInstitutionId = template.Id;
+                state.TempAmount = expected;
+                state.State = FlowStates.CostCenterExpenseAwaitingInfraDescription;
+                state.UpdatedAt = DateTime.UtcNow;
+                await _chatStateService.SaveAsync(state, cancellationToken);
+
+                await _telegramSender.SendMessageAsync(
+                    chatId,
+                    "📝 Digite a descrição dessa despesa:",
+                    cancellationToken);
+
+                return;
+            }
+
+            // Usa diretamente o valor esperado, sem descrição custom
             await RegisterInfraExpenseAndSendReceiptAsync(
                 chatId,
                 state,
                 template,
                 expected,
                 expected,
+                customDescription: null,
                 cancellationToken);
-        }
-        else
-        {
-            // Ajustar valor -> próximo passo: pedir o valor
-            state.TempInstitutionId = template.Id; // guardar template
-            state.State = FlowStates.CostCenterExpenseAwaitingInfraCustomAmount;
-            state.UpdatedAt = DateTime.UtcNow;
-            await _chatStateService.SaveAsync(state, cancellationToken);
 
-            var msg = new StringBuilder();
-            msg.AppendLine($"📡 Tipo de despesa: {template.Name}");
-            msg.AppendLine($"💰 Valor médio esperado: R$ {expected:N2}");
-            msg.AppendLine();
-            msg.AppendLine("Digite o valor que você pagou (ex: 250,00):");
-
-            await _telegramSender.SendMessageAsync(
-                chatId,
-                msg.ToString(),
-                cancellationToken);
+            return;
         }
+
+        // Ajustar valor -> próximo passo: pedir o valor
+        state.TempInstitutionId = template.Id; // guardar template
+        state.State = FlowStates.CostCenterExpenseAwaitingInfraCustomAmount;
+        state.UpdatedAt = DateTime.UtcNow;
+        await _chatStateService.SaveAsync(state, cancellationToken);
+
+        var msg = new StringBuilder();
+        msg.AppendLine($"📡 Tipo de despesa: {template.Name}");
+        msg.AppendLine($"💰 Valor médio esperado: R$ {expected:N2}");
+        msg.AppendLine();
+        msg.AppendLine("Digite o valor que você pagou (ex: 250,00):");
+
+        await _telegramSender.SendMessageAsync(
+            chatId,
+            msg.ToString(),
+            cancellationToken);
     }
 
     // 3B.3) Usuário informar valor customizado
@@ -617,12 +641,86 @@ public class RegisterCostCenterExpenseFlowService : IChatFlow
 
         var expected = template.DefaultAmount ?? 0m;
 
+        // Se o template exige descrição customizada, guarda o valor e pede a descrição
+        if (template.RequiresCustomDescription)
+        {
+            state.TempAmount = paid;
+            state.State = FlowStates.CostCenterExpenseAwaitingInfraDescription;
+            state.UpdatedAt = DateTime.UtcNow;
+            await _chatStateService.SaveAsync(state, cancellationToken);
+
+            await _telegramSender.SendMessageAsync(
+                chatId,
+                "📝 Digite a descrição dessa despesa:",
+                cancellationToken);
+
+            return;
+        }
+
+        // Caso normal: registra direto com o nome do template
         await RegisterInfraExpenseAndSendReceiptAsync(
             chatId,
             state,
             template,
             expected,
             paid,
+            customDescription: null,
+            cancellationToken);
+    }
+
+    // 3B.4) Descrição customizada para templates como "Outros" (NOVO)
+
+    private async Task HandleInfraDescriptionAsync(
+        long chatId,
+        string userText,
+        ChatState state,
+        CancellationToken cancellationToken)
+    {
+        if (state.TempSourceCostCenterId is null ||
+            state.TempPersonId is null ||
+            state.TempInstitutionId is null ||
+            state.TempAmount is null)
+        {
+            await _telegramSender.SendMessageAsync(
+                chatId,
+                "⚠️ Erro interno. Recomece com /registrar_despesa_caixinha.",
+                cancellationToken);
+            await _chatStateService.ClearAsync(chatId, cancellationToken);
+            return;
+        }
+
+        var description = userText.Trim();
+        if (string.IsNullOrWhiteSpace(description))
+        {
+            await _telegramSender.SendMessageAsync(
+                chatId,
+                "⚠️ A descrição não pode ser vazia. Digite novamente:",
+                cancellationToken);
+            return;
+        }
+
+        var templateId = (int)state.TempInstitutionId.Value;
+        var template = await _expenseService.GetByIdAsync(templateId, cancellationToken);
+        if (template is null)
+        {
+            await _telegramSender.SendMessageAsync(
+                chatId,
+                "⚠️ Tipo de despesa não encontrado.",
+                cancellationToken);
+            await _chatStateService.ClearAsync(chatId, cancellationToken);
+            return;
+        }
+
+        var expected = template.DefaultAmount ?? 0m;
+        var paidAmount = state.TempAmount.Value;
+
+        await RegisterInfraExpenseAndSendReceiptAsync(
+            chatId,
+            state,
+            template,
+            expected,
+            paidAmount,
+            customDescription: description,
             cancellationToken);
     }
 
@@ -634,6 +732,7 @@ public class RegisterCostCenterExpenseFlowService : IChatFlow
         Expense template,
         decimal expectedAmount,
         decimal paidAmount,
+        string? customDescription,
         CancellationToken cancellationToken)
     {
         var personId = state.TempPersonId!.Value;
@@ -651,13 +750,17 @@ public class RegisterCostCenterExpenseFlowService : IChatFlow
             return;
         }
 
+        var finalDescription = string.IsNullOrWhiteSpace(customDescription)
+            ? template.Name
+            : customDescription;
+
         await _transactionService.RegisterExpenseFromCostCenterAsync(
             personId,
             centerId,
             paidAmount,
             DateTime.UtcNow,
             categoryId: template.CategoryId,
-            description: template.Name,
+            description: finalDescription,
             cancellationToken);
 
         var newBalance = await _transactionService.GetCostCenterBalanceAsync(centerId, cancellationToken);
@@ -679,6 +782,10 @@ public class RegisterCostCenterExpenseFlowService : IChatFlow
         reply.AppendLine($"👤 Titular: {person.Name}");
         reply.AppendLine($"📦 Caixinha (Infra): {center.Name}");
         reply.AppendLine($"📡 Tipo de despesa: {template.Name}");
+
+        if (!string.IsNullOrWhiteSpace(customDescription))
+            reply.AppendLine($"📝 Descrição: {customDescription}");
+
         reply.AppendLine($"💰 Valor esperado: R$ {expectedAmount:N2}");
         reply.AppendLine($"💸 Valor pago: R$ {paidAmount:N2}");
         reply.AppendLine($"📅 Data: {DateTime.Now:dd/MM/yyyy HH:mm}");

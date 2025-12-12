@@ -22,6 +22,9 @@ public class ExpenseService : IExpenseService
     public Task<List<Expense>> GetByCostCenterAsync(int costCenterId, CancellationToken cancellationToken = default)
         => _repository.GetByCostCenterAsync(costCenterId, cancellationToken);
 
+    public Task<List<Expense>> GetByCostCenterNotDescriptionAsync(int costCenterId, CancellationToken cancellationToken = default)
+        => _repository.GetByCostCenterNotDescriptionAsync(costCenterId, cancellationToken);
+
     public async Task<Expense> CreateAsync(Expense expense, CancellationToken cancellationToken = default)
     {
         await _repository.AddAsync(expense, cancellationToken);
